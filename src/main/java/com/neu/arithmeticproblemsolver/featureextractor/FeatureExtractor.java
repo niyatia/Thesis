@@ -6,6 +6,7 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.util.HashMap;
@@ -56,6 +57,24 @@ public class FeatureExtractor {
                     }
                 }
             }
+            
+            
+            for (Map.Entry<String,Map<String, Integer>> entry: features.entrySet()) {
+            	String label = entry.getKey();
+            	try {
+            		FileWriter writer = new FileWriter("Label-"+label+".csv");
+            		Map<String, Integer> valueMap = entry.getValue();
+            		for(Map.Entry<String, Integer> valueEntry: valueMap.entrySet()) {
+            			writer.write(valueEntry.getKey() + " , " + valueEntry.getValue() + "\n");
+            		}
+            		writer.flush();
+            		writer.close();
+            	} catch (final Exception e) {
+            		e.printStackTrace();
+            	}
+            }
+            System.out.println(features);
+            
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
