@@ -111,6 +111,7 @@ public class FeatureExtractor {
         }
     }
     
+
     private static void writeData(final Map<String, Map<String, Integer>> featureMap) {
     	final Set<String> uniquePatterns = new HashSet<>();
     	final Map<String, String> labelStringMap = new HashMap<>();
