@@ -58,11 +58,12 @@ public class FeatureExtractor {
                 }
             }
             
-            
+            int count = 1;
             for (Map.Entry<String,Map<String, Integer>> entry: features.entrySet()) {
             	String label = entry.getKey();
             	try {
-            		FileWriter writer = new FileWriter("Label-"+label+".csv");
+            		FileWriter writer = new FileWriter("Label" + count +".csv");
+                    writer.write(label);
             		Map<String, Integer> valueMap = entry.getValue();
             		for(Map.Entry<String, Integer> valueEntry: valueMap.entrySet()) {
             			writer.write(valueEntry.getKey() + " , " + valueEntry.getValue() + "\n");
@@ -72,7 +73,10 @@ public class FeatureExtractor {
             	} catch (final Exception e) {
             		e.printStackTrace();
             	}
+
+                count++;
             }
+
             System.out.println(features);
             
         } catch (FileNotFoundException e) {
