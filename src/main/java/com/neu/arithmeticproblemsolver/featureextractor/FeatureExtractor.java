@@ -9,8 +9,10 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,7 +62,6 @@ public class FeatureExtractor {
                 }
             }
             
-<<<<<<< HEAD
             int count = 1;
             for (Map.Entry<String,Map<String, Integer>> entry: features.entrySet()) {
             	String label = entry.getKey();
@@ -110,7 +111,7 @@ public class FeatureExtractor {
         }
     }
     
-    private static void writeData(final Map<String, Map<String, Integer>> feateureMap) {
+    private static void writeData(final Map<String, Map<String, Integer>> featureMap) {
     	final Set<String> uniquePatterns = new HashSet<>();
     	final Map<String, String> labelStringMap = new HashMap<>();
     	labelStringMap.put("+", "Addition");
@@ -118,7 +119,7 @@ public class FeatureExtractor {
     	labelStringMap.put("?", "Question");
     	labelStringMap.put("i", "Irrelevant");
     	labelStringMap.put("=", "Equals");
-    	for (Map.Entry<String,Map<String, Integer>> entry: feateureMap.entrySet()) {
+    	for (Map.Entry<String,Map<String, Integer>> entry: featureMap.entrySet()) {
         	String label = entry.getKey();
         	Map<String, Integer> valueMap = entry.getValue();
         	for(Map.Entry<String, Integer> valueEntry: valueMap.entrySet()) {
@@ -126,15 +127,50 @@ public class FeatureExtractor {
         	}
     	}
     	
+    	Object[] labels = featureMap.keySet().toArray();
+    	final int noOfLabels = labels.length;
+    	
+    	for (int labelIndex = 0; labelIndex < noOfLabels; labelIndex++) {
+    		final String currentLabel = (String)labels[labelIndex];
+    		
+    		for (int comparisonLabelIndex = labelIndex + 1; comparisonLabelIndex < noOfLabels; comparisonLabelIndex++) {
+    			final String currentComparisonLabel = (String)labels[comparisonLabelIndex];
+    			String fileName = "Comparison-";
+        		fileName += labelStringMap.containsKey(currentLabel) ? labelStringMap.get(currentLabel) : labelIndex + "-";
+        		fileName += labelStringMap.containsKey(currentComparisonLabel) ? labelStringMap.get(currentComparisonLabel) : comparisonLabelIndex ;
+        		fileName += ".csv";
+        		try {
+        			FileWriter writer = new FileWriter(fileName);
+        			writer.write("Pattern," + currentLabel + "," + currentComparisonLabel + "\n");
+        			final Map<String, Integer> labelMap = featureMap.get(currentLabel);
+        			final Map<String, Integer> comparisonLabelMap = featureMap.get(currentComparisonLabel);
+        			
+        			for (Map.Entry<String, Integer> patternKey: labelMap.entrySet()) {
+        				final String pattern = patternKey.getKey();
+        				if (comparisonLabelMap.containsKey(pattern)){
+        					writer.write(pattern + "," + patternKey.getValue() + "," + comparisonLabelMap.get(pattern) + "\n");
+        				}
+        			}
+        			
+        			writer.flush();
+        			writer.close();
+        		} catch (final Exception e){
+        			e.printStackTrace();
+        		}
+    		}
+    		
+    	}
+    	
+    	
     	for (String uniquePattern: uniquePatterns) {
-    		for (Map<String, Integer> entry: feateureMap.values()) {
+    		for (Map<String, Integer> entry: featureMap.values()) {
     			if (!entry.containsKey(uniquePattern)) {
     				entry.put(uniquePattern, 0);
     			}
     		}
     	}
     	
-    	for (Map.Entry<String,Map<String, Integer>> entry: feateureMap.entrySet()) {
+    	for (Map.Entry<String,Map<String, Integer>> entry: featureMap.entrySet()) {
         	String label = entry.getKey();
         	try {
         		String labelString = labelStringMap.containsKey(label) ? labelStringMap.get(label) : label;
