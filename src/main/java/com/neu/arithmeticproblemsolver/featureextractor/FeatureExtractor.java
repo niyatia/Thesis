@@ -10,7 +10,9 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Extracts the frequencies of n-gram sub pattern features for each label in the dataset.
@@ -58,21 +60,7 @@ public class FeatureExtractor {
                 }
             }
             
-            
-            for (Map.Entry<String,Map<String, Integer>> entry: features.entrySet()) {
-            	String label = entry.getKey();
-            	try {
-            		FileWriter writer = new FileWriter("Label-"+label+".csv");
-            		Map<String, Integer> valueMap = entry.getValue();
-            		for(Map.Entry<String, Integer> valueEntry: valueMap.entrySet()) {
-            			writer.write(valueEntry.getKey() + " , " + valueEntry.getValue() + "\n");
-            		}
-            		writer.flush();
-            		writer.close();
-            	} catch (final Exception e) {
-            		e.printStackTrace();
-            	}
-            }
+            writeData(features);
             System.out.println(features);
             
         } catch (FileNotFoundException e) {
@@ -101,5 +89,47 @@ public class FeatureExtractor {
             }
             features.put(label, frequency);
         }
+    }
+    
+    private static void writeData(final Map<String, Map<String, Integer>> feateureMap) {
+    	final Set<String> uniquePatterns = new HashSet<>();
+    	final Map<String, String> labelStringMap = new HashMap<>();
+    	labelStringMap.put("+", "Addition");
+    	labelStringMap.put("-", "Subtraction");
+    	labelStringMap.put("?", "Question");
+    	labelStringMap.put("i", "Irrelevant");
+    	labelStringMap.put("=", "Equals");
+    	for (Map.Entry<String,Map<String, Integer>> entry: feateureMap.entrySet()) {
+        	String label = entry.getKey();
+        	Map<String, Integer> valueMap = entry.getValue();
+        	for(Map.Entry<String, Integer> valueEntry: valueMap.entrySet()) {
+        		uniquePatterns.add(valueEntry.getKey());
+        	}
+    	}
+    	
+    	for (String uniquePattern: uniquePatterns) {
+    		for (Map<String, Integer> entry: feateureMap.values()) {
+    			if (!entry.containsKey(uniquePattern)) {
+    				entry.put(uniquePattern, 0);
+    			}
+    		}
+    	}
+    	
+    	for (Map.Entry<String,Map<String, Integer>> entry: feateureMap.entrySet()) {
+        	String label = entry.getKey();
+        	try {
+        		String labelString = labelStringMap.containsKey(label) ? labelStringMap.get(label) : label;
+        		FileWriter writer = new FileWriter("Label-"+labelString+".csv");
+        		Map<String, Integer> valueMap = entry.getValue();
+        		for(Map.Entry<String, Integer> valueEntry: valueMap.entrySet()) {
+        			writer.write(valueEntry.getKey() + " , " + valueEntry.getValue() + "\n");
+        		}
+        		writer.flush();
+        		writer.close();
+        	} catch (final Exception e) {
+        		e.printStackTrace();
+        	}
+        }
+    	
     }
 }
