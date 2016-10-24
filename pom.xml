@@ -10,11 +10,18 @@
 
 <dependencies>
 	<!-- JSON Glassfish -->
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.json</artifactId>
-            <version>1.0.4</version>
-        </dependency>
+    <dependency>
+        <groupId>org.glassfish</groupId>
+        <artifactId>javax.json</artifactId>
+        <version>1.0.4</version>
+    </dependency>
+        
+    <!-- Project Lomnok -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>1.16.10</version>
+    </dependency>
 </dependencies>
 
 </project>

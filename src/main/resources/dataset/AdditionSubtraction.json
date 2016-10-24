@@ -773,12 +773,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Benny picked 2 apples from the tree .",
-            "label": "",
+            "label": "+",
             "SyntacticPattern": "NVCNPDN"
           },
           {
             "Sentence": "Dan picked 9 apples from the apple tree .",
-            "label": "",
+            "label": "+",
             "SyntacticPattern": "NVCNPDN"
           }
         ]
@@ -788,7 +788,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "How many apples were picked in total ?",
-            "label": "",
+            "label": "?",
             "SyntacticPattern": "WANVVPN"
           }
         ]
@@ -7938,7 +7938,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "At a pie-eating contest Erik got through 0.6666666666666666 pie before time was called .",
-            "label": "",
+            "label": "-",
             "SyntacticPattern": "PDANNVPCNPNVV"
           }
         ]
@@ -7948,7 +7948,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Frank finished just 0.3333333333333333 pie .",
-            "label": "",
+            "label": "-",
             "SyntacticPattern": "NVCN"
           }
         ]
@@ -8643,14 +8643,9 @@
         "Sentence": "What fraction of the students in the band are in either the trumpet section or the trombone section ?",
         "SimplifiedSentences": [
           {
-            "Sentence": "What fraction of the students in the band are in either trumpet .",
+            "Sentence": "What fraction of the students in the band are in either trumpet section or the trombone section ?",
             "label": "?",
-            "SyntacticPattern": "NPDNPDNVPCN"
-          },
-          {
-            "Sentence": "fraction are the section the trombone section ? .",
-            "label": "",
-            "SyntacticPattern": "NVDNDN"
+            "SyntacticPattern": "NPDNPDNVPCNDN"
           }
         ]
       }
@@ -16402,7 +16397,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "The restaurant served 7 pies yesterday.",
-            "label": "",
+            "label": "-",
             "SyntacticPattern": "DNVCNN"
           },
           {
@@ -17321,17 +17316,17 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Fred picked 36 limes at the farm .",
-            "label": "",
+            "label": "+",
             "SyntacticPattern": "NVCNPDN"
           },
           {
             "Sentence": "Alyssa picked 32 limes at the farm .",
-            "label": "",
+            "label": "+",
             "SyntacticPattern": "NVCNPDN"
           },
           {
             "Sentence": "Nancy picked 35 limes at the farm .",
-            "label": "",
+            "label": "+",
             "SyntacticPattern": "NVCNPDN"
           }
         ]
@@ -17674,7 +17669,7 @@
           },
           {
             "Sentence": "Last week Keith had 36 dollars .",
-            "label": "",
+            "label": "+",
             "SyntacticPattern": "NVCN"
           }
         ]
@@ -18093,7 +18088,7 @@
           },
           {
             "Sentence": "8 kittens had spots .",
-            "label": "",
+            "label": "+",
             "SyntacticPattern": "CNVN"
           }
         ]
@@ -19514,7 +19509,7 @@
           },
           {
             "Sentence": "how many bad carrots did they have ? .",
-            "label": ">",
+            "label": "?",
             "SyntacticPattern": "WAANVNV"
           }
         ]
@@ -20382,7 +20377,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Haley and her mom were picking carrots from their garden .",
-            "label": "",
+            "label": "i",
             "SyntacticPattern": "NCNNVVNPNN"
           }
         ]
@@ -29533,7 +29528,7 @@
           },
           {
             "Sentence": "Jessica found 5 seashells on the beach .",
-            "label": "",
+            "label": "+",
             "SyntacticPattern": "NVCNPDN"
           }
         ]
@@ -42464,14 +42459,9 @@
         "Sentence": "How tall is the shortest player , in inches ?",
         "SimplifiedSentences": [
           {
-            "Sentence": "How tall is the shortest player .",
+            "Sentence": "How tall is the shortest player in inches ?",
             "label": "?",
-            "SyntacticPattern": "WAVDAN"
-          },
-          {
-            "Sentence": "is player in inches ? .",
-            "label": "",
-            "SyntacticPattern": "VNPN"
+            "SyntacticPattern": "WAVDANPN"
           }
         ]
       }
@@ -55588,7 +55578,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "How many more does Bryan have ?",
-            "label": "",
+            "label": "?",
             "SyntacticPattern": "WAAVNV"
           }
         ]
