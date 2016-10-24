@@ -31,6 +31,7 @@ import edu.stanford.nlp.trees.PennTreebankLanguagePack;
 import edu.stanford.nlp.trees.TreebankLanguagePack;
 import edu.stanford.nlp.trees.TypedDependency;
 
+
 /**
  * Extracts the frequencies of n-gram sub pattern features for each label in the dataset.
  */
@@ -43,26 +44,27 @@ public class FeatureExtractor {
     private static final String LABEL = "label";
     private static final String SYNTACTIC_PATTERN = "SyntacticPattern";
 
-    private static final String QUESTION_SENTENCE = "sQuestion";
-    private static final String PARENT_INDEX = "ParentIndex";
-    private static final TreebankLanguagePack TREE_LANGUAGE_PACK;
-    private static final MaxentTagger MAXENT_TAGGER;
-    private static final GrammaticalStructureFactory GRAMMATICAL_STRUCTURE_FACTORY;
-    private static final DependencyParser DEPENDENCY_PARSER;
-    static{
-        TREE_LANGUAGE_PACK = new PennTreebankLanguagePack();
-        GRAMMATICAL_STRUCTURE_FACTORY = TREE_LANGUAGE_PACK.grammaticalStructureFactory();
-        DEPENDENCY_PARSER = DependencyParser.loadFromModelFile("models/english_UD.gz");
-        MAXENT_TAGGER = new MaxentTagger("models/english-left3words/english-left3words-distsim.tagger");
-    }
-
     final static Map<String, String> LABEL_STRINGS = new HashMap<>();
     final static String ADDITION_LABEL = "+";
     final static String SUBTRACTION_LABEL = "-";
     final static String QUESTION_LABEL = "?";
     final static String EQUALS_LABEL = "=";
     final static String IRRELEVANT_LABEL = "i";
-	
+
+    private static final String QUESTION_SENTENCE = "sQuestion";
+    private static final String PARENT_INDEX = "ParentIndex";
+    private static final TreebankLanguagePack TREE_LANGUAGE_PACK;
+    private static final MaxentTagger MAXENT_TAGGER;
+    private static final GrammaticalStructureFactory GRAMMATICAL_STRUCTURE_FACTORY;
+    private static final DependencyParser DEPENDENCY_PARSER;
+    
+    static {
+        TREE_LANGUAGE_PACK = new PennTreebankLanguagePack();
+        GRAMMATICAL_STRUCTURE_FACTORY = TREE_LANGUAGE_PACK.grammaticalStructureFactory();
+        DEPENDENCY_PARSER = DependencyParser.loadFromModelFile("models/english_UD.gz");
+        MAXENT_TAGGER = new MaxentTagger("models/english-left3words/english-left3words-distsim.tagger");
+    }
+
     public static void main(final String[] args) {
     	LABEL_STRINGS.put(ADDITION_LABEL, "Addition");
     	LABEL_STRINGS.put(SUBTRACTION_LABEL, "Subtraction");
@@ -108,9 +110,8 @@ public class FeatureExtractor {
             System.out.println(topKPatterns);
             
             generateComparisonFiles(labelToPatternFrequencies);
-            
             System.out.println(labelToPatternFrequencies);
-            
+            System.out.println(labelToPatternFrequencies);
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -153,7 +154,7 @@ public class FeatureExtractor {
 				return o1.getSumOfCount() - o2.getSumOfCount();
 			}
     	});
-    	
+
     	final Map<String, Integer> additionMap = featureMap.get(ADDITION_LABEL);
     	int noOfVariantPatternsFound = 0;
     	for (final String pattern: additionMap.keySet()) {
