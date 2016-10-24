@@ -1,19 +1,35 @@
 package com.neu.arithmeticproblemsolver.featureextractor;
 
-import edu.stanford.nlp.ling.HasWord;
-import edu.stanford.nlp.ling.TaggedWord;
-import edu.stanford.nlp.parser.nndep.DependencyParser;
-import edu.stanford.nlp.process.DocumentPreprocessor;
-import edu.stanford.nlp.tagger.maxent.MaxentTagger;
-import edu.stanford.nlp.trees.*;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.net.URLDecoder;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import java.io.*;
-import java.net.URLDecoder;
-import java.util.*;
+
+import edu.stanford.nlp.ling.HasWord;
+import edu.stanford.nlp.ling.TaggedWord;
+import edu.stanford.nlp.parser.nndep.DependencyParser;
+import edu.stanford.nlp.process.DocumentPreprocessor;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
+import edu.stanford.nlp.trees.GrammaticalStructure;
+import edu.stanford.nlp.trees.GrammaticalStructureFactory;
+import edu.stanford.nlp.trees.PennTreebankLanguagePack;
+import edu.stanford.nlp.trees.TreebankLanguagePack;
+import edu.stanford.nlp.trees.TypedDependency;
 
 /**
  * Extracts the frequencies of n-gram sub pattern features for each label in the dataset.
@@ -26,6 +42,7 @@ public class FeatureExtractor {
     private static final String SIMPLIFIED_SENTENCES = "SimplifiedSentences";
     private static final String LABEL = "label";
     private static final String SYNTACTIC_PATTERN = "SyntacticPattern";
+
     private static final String QUESTION_SENTENCE = "sQuestion";
     private static final String PARENT_INDEX = "ParentIndex";
     private static final TreebankLanguagePack TREE_LANGUAGE_PACK;
@@ -39,22 +56,35 @@ public class FeatureExtractor {
         MAXENT_TAGGER = new MaxentTagger("models/english-left3words/english-left3words-distsim.tagger");
     }
 
+    final static Map<String, String> LABEL_STRINGS = new HashMap<>();
+    final static String ADDITION_LABEL = "+";
+    final static String SUBTRACTION_LABEL = "-";
+    final static String QUESTION_LABEL = "?";
+    final static String EQUALS_LABEL = "=";
+    final static String IRRELEVANT_LABEL = "i";
+	
     public static void main(final String[] args) {
-        getDependencies();
-        //getData();
+    	LABEL_STRINGS.put(ADDITION_LABEL, "Addition");
+    	LABEL_STRINGS.put(SUBTRACTION_LABEL, "Subtraction");
+    	LABEL_STRINGS.put(QUESTION_LABEL, "Question");
+    	LABEL_STRINGS.put(IRRELEVANT_LABEL, "Irrelevant");
+    	LABEL_STRINGS.put(EQUALS_LABEL, "Equals");
+        extractFeatures();
     }
 
-    public static void getData(){
-        final String datasetFilePath = URLDecoder.decode(Thread.currentThread()
-                                                 .getContextClassLoader()
-                                                 .getResource(ADD_SUB_FILE_PATH)
-                                                 .getPath());
-
+    /**
+     * Extracts features from the dataset.
+     */
+    public static void extractFeatures(){
         try {
+        	final String datasetFilePath = URLDecoder.decode(Thread.currentThread()
+				                    .getContextClassLoader()
+				                    .getResource(ADD_SUB_FILE_PATH)
+				                    .getPath());
             final InputStream inputFileStream = new FileInputStream(datasetFilePath);
             final JsonReader jsonReader = Json.createReader(inputFileStream);
             final JsonArray fileArray = jsonReader.readArray();
-            Map<String, Map<String, Integer>> features = new HashMap<String, Map<String, Integer>>();
+            Map<String, Map<String, Integer>> labelToPatternFrequencies = new HashMap<String, Map<String, Integer>>();
 
             for (int questionCounter = 0; questionCounter < fileArray.size(); questionCounter++) {
                 final JsonObject questionObject = fileArray.getJsonObject(questionCounter);
@@ -69,46 +99,37 @@ public class FeatureExtractor {
                         final String label = simpleSentenceObject.getString(LABEL);
                         final String syntacticPattern = simpleSentenceObject.getString(SYNTACTIC_PATTERN);
 
-                        extractFeature(label, syntacticPattern, features);
+                        generateNGramForSyntacticPattern(label, syntacticPattern, labelToPatternFrequencies);
                     }
                 }
             }
             
-            int count = 1;
-            for (Map.Entry<String,Map<String, Integer>> entry: features.entrySet()) {
-            	String label = entry.getKey();
-            	try {
-            		FileWriter writer = new FileWriter("Label" + count +".csv");
-                    writer.write(label);
-            		Map<String, Integer> valueMap = entry.getValue();
-            		for(Map.Entry<String, Integer> valueEntry: valueMap.entrySet()) {
-            			writer.write(valueEntry.getKey() + " , " + valueEntry.getValue() + "\n");
-            		}
-            		writer.flush();
-            		writer.close();
-            	} catch (final Exception e) {
-            		e.printStackTrace();
-            	}
-
-                count++;
-            }
-
-            writeData(features);
-            System.out.println(features);
+            final SortedSet<VariantPattern> topKPatterns = getTopKVariantPatterns(labelToPatternFrequencies, 20, 10);
+            System.out.println(topKPatterns);
             
-        } catch (FileNotFoundException e) {
+            generateComparisonFiles(labelToPatternFrequencies);
+            
+            System.out.println(labelToPatternFrequencies);
+            
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void extractFeature(final String label,
+    /**
+     * Generates the n-grams of the given syntactic pattern and adds it to the nGrams.
+     * @param label: The label of the syntactic pattern.
+     * @param syntacticPattern: the syntactic pattern.
+     * @param nGrams: The n-grams corresponding to each label. 
+     */
+    private static void generateNGramForSyntacticPattern(final String label,
                                        final String syntacticPattern,
-                                       Map<String, Map<String, Integer>> features){
+                                       Map<String, Map<String, Integer>> nGrams){
         Map<String, Integer> frequency;
-        frequency = features.get(label);
+        frequency = nGrams.get(label);
         if (frequency == null){
             frequency = new HashMap<String, Integer>();
-            features.put(label, frequency);
+            nGrams.put(label, frequency);
         }
 
         for (int charCounter = 0; charCounter < syntacticPattern.length(); charCounter++){
@@ -120,27 +141,56 @@ public class FeatureExtractor {
                     frequency.put(pattern, 1);
                 }
             }
-            features.put(label, frequency);
+            nGrams.put(label, frequency);
         }
     }
     
-
-    private static void writeData(final Map<String, Map<String, Integer>> featureMap) {
-    	final Set<String> uniquePatterns = new HashSet<>();
-    	final Map<String, String> labelStringMap = new HashMap<>();
-    	labelStringMap.put("+", "Addition");
-    	labelStringMap.put("-", "Subtraction");
-    	labelStringMap.put("?", "Question");
-    	labelStringMap.put("i", "Irrelevant");
-    	labelStringMap.put("=", "Equals");
-    	for (Map.Entry<String,Map<String, Integer>> entry: featureMap.entrySet()) {
-        	String label = entry.getKey();
-        	Map<String, Integer> valueMap = entry.getValue();
-        	for(Map.Entry<String, Integer> valueEntry: valueMap.entrySet()) {
-        		uniquePatterns.add(valueEntry.getKey());
-        	}
-    	}
+    private static SortedSet<VariantPattern> getTopKVariantPatterns(final Map<String, Map<String, Integer>> featureMap, final int k, final int difference){
     	
+    	final SortedSet<VariantPattern> topKVariantPatterns = new TreeSet<>(new Comparator<VariantPattern>() {
+			@Override
+			public int compare(final VariantPattern o1, final VariantPattern o2) {
+				return o1.getSumOfCount() - o2.getSumOfCount();
+			}
+    	});
+    	
+    	final Map<String, Integer> additionMap = featureMap.get(ADDITION_LABEL);
+    	int noOfVariantPatternsFound = 0;
+    	for (final String pattern: additionMap.keySet()) {
+    		
+    		boolean patternExistsInEveryOtherMap = true;
+    		final VariantPattern variantPattern = new VariantPattern(pattern);
+    		for (final Entry<String, Map<String, Integer>> patternMaps: featureMap.entrySet()) {
+    			final String label = patternMaps.getKey();
+    			final Map<String, Integer> patternFrequencies = patternMaps.getValue();
+    			    			
+    			if (!patternFrequencies.containsKey(pattern)) {
+    				patternExistsInEveryOtherMap = false;
+    			} else {
+    				variantPattern.addCount(label, patternFrequencies.get(pattern));
+    			}
+    		}
+    		
+    		if (patternExistsInEveryOtherMap) {
+    			if (variantPattern.isDifferenceGreaterThanT(difference)) {
+    				topKVariantPatterns.add(variantPattern);
+    				noOfVariantPatternsFound++;
+    				
+    				if (noOfVariantPatternsFound == k) {
+    					break;
+    				}
+    			}
+    		}
+    	}    	
+    	return topKVariantPatterns;
+    }
+    
+    
+    /**
+     * Generates comparison CSVs for each combination of two labels found in featureMap.
+     * @param featureMap The map of labels to pattern frequencies.
+     */
+    private static void generateComparisonFiles(final Map<String, Map<String, Integer>> featureMap) {
     	Object[] labels = featureMap.keySet().toArray();
     	final int noOfLabels = labels.length;
     	
@@ -150,8 +200,8 @@ public class FeatureExtractor {
     		for (int comparisonLabelIndex = labelIndex + 1; comparisonLabelIndex < noOfLabels; comparisonLabelIndex++) {
     			final String currentComparisonLabel = (String)labels[comparisonLabelIndex];
     			String fileName = "Comparison-";
-        		fileName += labelStringMap.containsKey(currentLabel) ? labelStringMap.get(currentLabel) : labelIndex + "-";
-        		fileName += labelStringMap.containsKey(currentComparisonLabel) ? labelStringMap.get(currentComparisonLabel) : comparisonLabelIndex ;
+        		fileName += LABEL_STRINGS.containsKey(currentLabel) ? LABEL_STRINGS.get(currentLabel) : labelIndex + "-";
+        		fileName += LABEL_STRINGS.containsKey(currentComparisonLabel) ? LABEL_STRINGS.get(currentComparisonLabel) : comparisonLabelIndex ;
         		fileName += ".csv";
         		try {
         			FileWriter writer = new FileWriter(fileName);
@@ -171,35 +221,8 @@ public class FeatureExtractor {
         		} catch (final Exception e){
         			e.printStackTrace();
         		}
-    		}
-    		
+    		}	
     	}
-    	
-    	
-    	for (String uniquePattern: uniquePatterns) {
-    		for (Map<String, Integer> entry: featureMap.values()) {
-    			if (!entry.containsKey(uniquePattern)) {
-    				entry.put(uniquePattern, 0);
-    			}
-    		}
-    	}
-    	
-    	for (Map.Entry<String,Map<String, Integer>> entry: featureMap.entrySet()) {
-        	String label = entry.getKey();
-        	try {
-        		String labelString = labelStringMap.containsKey(label) ? labelStringMap.get(label) : label;
-        		FileWriter writer = new FileWriter("Label-"+labelString+".csv");
-        		Map<String, Integer> valueMap = entry.getValue();
-        		for(Map.Entry<String, Integer> valueEntry: valueMap.entrySet()) {
-        			writer.write(valueEntry.getKey() + " , " + valueEntry.getValue() + "\n");
-        		}
-        		writer.flush();
-        		writer.close();
-        	} catch (final Exception e) {
-        		e.printStackTrace();
-        	}
-        }
-    	
     }
 
     private static void getDependencies(){
