@@ -1,20 +1,19 @@
 package com.neu.arithmeticproblemsolver.featureextractor;
 
+import edu.stanford.nlp.ling.HasWord;
+import edu.stanford.nlp.ling.TaggedWord;
+import edu.stanford.nlp.parser.nndep.DependencyParser;
+import edu.stanford.nlp.process.DocumentPreprocessor;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
+import edu.stanford.nlp.trees.*;
+
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Extracts the frequencies of n-gram sub pattern features for each label in the dataset.
@@ -27,9 +26,22 @@ public class FeatureExtractor {
     private static final String SIMPLIFIED_SENTENCES = "SimplifiedSentences";
     private static final String LABEL = "label";
     private static final String SYNTACTIC_PATTERN = "SyntacticPattern";
+    private static final String QUESTION_SENTENCE = "sQuestion";
+    private static final String PARENT_INDEX = "ParentIndex";
+    private static final TreebankLanguagePack TREE_LANGUAGE_PACK;
+    private static final MaxentTagger MAXENT_TAGGER;
+    private static final GrammaticalStructureFactory GRAMMATICAL_STRUCTURE_FACTORY;
+    private static final DependencyParser DEPENDENCY_PARSER;
+    static{
+        TREE_LANGUAGE_PACK = new PennTreebankLanguagePack();
+        GRAMMATICAL_STRUCTURE_FACTORY = TREE_LANGUAGE_PACK.grammaticalStructureFactory();
+        DEPENDENCY_PARSER = DependencyParser.loadFromModelFile("models/english_UD.gz");
+        MAXENT_TAGGER = new MaxentTagger("models/english-left3words/english-left3words-distsim.tagger");
+    }
 
     public static void main(final String[] args) {
-            getData();
+        getDependencies();
+        //getData();
     }
 
     public static void getData(){
@@ -80,6 +92,7 @@ public class FeatureExtractor {
 
                 count++;
             }
+
             writeData(features);
             System.out.println(features);
             
@@ -187,5 +200,47 @@ public class FeatureExtractor {
         	}
         }
     	
+    }
+
+    private static void getDependencies(){
+        Map<Integer, Set<String>> dependencyMap = new HashMap<>();
+        final String datasetFilePath = URLDecoder.decode(Thread.currentThread()
+                .getContextClassLoader()
+                .getResource(ADD_SUB_FILE_PATH)
+                .getPath());
+
+        try {
+            final InputStream inputFileStream = new FileInputStream(datasetFilePath);
+            final JsonReader jsonReader = Json.createReader(inputFileStream);
+            final JsonArray fileArray = jsonReader.readArray();
+            Integer questionIndex;
+            for (int questionCounter = 0; questionCounter < fileArray.size(); questionCounter++) {
+                final JsonObject questionObject = fileArray.getJsonObject(questionCounter);
+                questionIndex = questionObject.getInt(PARENT_INDEX);
+                Set<String> dependencyList = new TreeSet<>();
+                final String question = questionObject.getString(QUESTION_SENTENCE);
+                final StringReader textReader = new StringReader(question);
+                final DocumentPreprocessor textProcessor = new DocumentPreprocessor(textReader);
+                textProcessor.setTokenizerFactory(TREE_LANGUAGE_PACK.getTokenizerFactory());
+
+                for (List<HasWord> sentenceWordList : textProcessor) {
+                    List<TaggedWord> taggedWords = MAXENT_TAGGER.tagSentence(sentenceWordList);
+                    GrammaticalStructure grammaticalStructure = DEPENDENCY_PARSER.predict(taggedWords);
+
+                    Collection<TypedDependency> sentenceDependencies = grammaticalStructure.typedDependenciesCCprocessed();
+                    for(TypedDependency sentenceDependency : sentenceDependencies){
+                        dependencyList.add(sentenceDependency.reln().getShortName());
+                    }
+
+                    dependencyMap.put(questionIndex, dependencyList);
+                }
+            }
+
+            System.out.print(dependencyMap);
+        }
+        catch (final Exception e){
+            e.printStackTrace();
+        }
+
     }
 }
