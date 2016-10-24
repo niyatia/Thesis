@@ -9,6 +9,28 @@
     <version>1.0-SNAPSHOT</version>
 
 <dependencies>
+    <!-- Stanford Core NLP -->
+    <dependency>
+        <groupId>edu.stanford.nlp</groupId>
+        <artifactId>stanford-corenlp</artifactId>
+        <version>3.6.0</version>
+    </dependency>
+
+    <!-- Stanford Code NLP Models-->
+    <dependency>
+        <groupId>edu.stanford.nlp</groupId>
+        <artifactId>stanford-corenlp</artifactId>
+        <version>3.6.0</version>
+        <classifier>models</classifier>
+    </dependency>
+
+    <!-- Project Lomnok -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>1.16.10</version>
+    </dependency>
+
 	<!-- JSON Glassfish -->
     <dependency>
         <groupId>org.glassfish</groupId>
