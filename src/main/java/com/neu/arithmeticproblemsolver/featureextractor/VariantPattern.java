@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 
 @Accessors(prefix = "m") 
-
 public class VariantPattern {
 
 	@Getter final private Map<String, Integer> mLabelCount;

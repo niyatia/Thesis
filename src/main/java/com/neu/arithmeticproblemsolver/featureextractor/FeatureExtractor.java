@@ -1,5 +1,6 @@
 package com.neu.arithmeticproblemsolver.featureextractor;
 
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.*;
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.TaggedWord;
 import edu.stanford.nlp.parser.nndep.DependencyParser;
@@ -27,21 +28,7 @@ import java.util.Map.Entry;
  * Extracts the frequencies of n-gram sub pattern features for each label in the dataset.
  */
 public class FeatureExtractor {
-
-    private static final String DATASET_DIRECTORY = "dataset/";
-    private static final String ADD_SUB_FILE_PATH = DATASET_DIRECTORY + "AdditionSubtraction.json";
-    private static final String SENTENCES = "Sentences";
-    private static final String SIMPLIFIED_SENTENCES = "SimplifiedSentences";
-    private static final String LABEL = "label";
-    private static final String SYNTACTIC_PATTERN = "SyntacticPattern";
-    final static Map<String, String> LABEL_STRINGS = new HashMap<>();
-    final static String ADDITION_LABEL = "+";
-    final static String SUBTRACTION_LABEL = "-";
-    final static String QUESTION_LABEL = "?";
-    final static String EQUALS_LABEL = "=";
-    final static String IRRELEVANT_LABEL = "i";
-
-    private static final String SENTENCE = "Sentence";
+    
     private static final TreebankLanguagePack TREE_LANGUAGE_PACK;
     private static final MaxentTagger MAXENT_TAGGER;
     private static final DependencyParser DEPENDENCY_PARSER;
@@ -49,45 +36,45 @@ public class FeatureExtractor {
     static {
         TREE_LANGUAGE_PACK = new PennTreebankLanguagePack();
         DEPENDENCY_PARSER = DependencyParser.loadFromModelFile("models/english_UD.gz");
-        MAXENT_TAGGER = new MaxentTagger("models/english-left3words/english-left3words-distsim.tagger");
+        MAXENT_TAGGER = new MaxentTagger("models/english-left3words/english-left3words-distsim.tagger");        
     }
 
-    public static void main(final String[] args) {
-    	LABEL_STRINGS.put(ADDITION_LABEL, "Addition");
-    	LABEL_STRINGS.put(SUBTRACTION_LABEL, "Subtraction");
-    	LABEL_STRINGS.put(QUESTION_LABEL, "Question");
-    	LABEL_STRINGS.put(IRRELEVANT_LABEL, "Irrelevant");
-    	LABEL_STRINGS.put(EQUALS_LABEL, "Equals");
-        extractFeatures();
-        getDependencies();
+    private final SortedSet<QuestionInstance> mQuestionInstances;
+    
+    public static void main(final String[] args) { 
+    	FeatureExtractor extractor = new FeatureExtractor();
+    	extractor.extractFeatures();
+    	System.out.println(extractor.mQuestionInstances);
     }
 
+    public FeatureExtractor() {
+    	mQuestionInstances = new TreeSet<>(getQuestionInstancesComparator());
+    }
     /**
      * Extracts features from the dataset.
      */
-    public static void extractFeatures(){
+    public void extractFeatures(){
         try {
-        	final String datasetFilePath = URLDecoder.decode(Thread.currentThread()
-				                    .getContextClassLoader()
-				                    .getResource(ADD_SUB_FILE_PATH)
-				                    .getPath());
-            final InputStream inputFileStream = new FileInputStream(datasetFilePath);
+            final InputStream inputFileStream = new FileInputStream(ADD_SUB_FILE_PATH);
             final JsonReader jsonReader = Json.createReader(inputFileStream);
             final JsonArray fileArray = jsonReader.readArray();
             Map<String, Map<String, Integer>> labelToPatternFrequencies = new HashMap<String, Map<String, Integer>>();
 
             for (int questionCounter = 0; questionCounter < fileArray.size(); questionCounter++) {
                 final JsonObject questionObject = fileArray.getJsonObject(questionCounter);
-                final JsonArray sentences = questionObject.getJsonArray(SENTENCES);
-
+                final JsonArray sentences = questionObject.getJsonArray(KEY_SENTENCES);
+                
+                final QuestionInstance questionInstance = extractDependencyFeatures(questionObject);
+                mQuestionInstances.add(questionInstance);
+                
                 for (int sentenceCounter = 0; sentenceCounter < sentences.size(); sentenceCounter++) {
                     final JsonObject sentenceObject = sentences.getJsonObject(sentenceCounter);
-                    final JsonArray simplifiedSentences = sentenceObject.getJsonArray(SIMPLIFIED_SENTENCES);
+                    final JsonArray simplifiedSentences = sentenceObject.getJsonArray(KEY_SIMPLIFIED_SENTENCES);
 
                     for (int simpleSentenceCounter = 0; simpleSentenceCounter < simplifiedSentences.size(); simpleSentenceCounter++) {
                         final JsonObject simpleSentenceObject = simplifiedSentences.getJsonObject(simpleSentenceCounter);
-                        final String label = simpleSentenceObject.getString(LABEL);
-                        final String syntacticPattern = simpleSentenceObject.getString(SYNTACTIC_PATTERN);
+                        final String label = simpleSentenceObject.getString(KEY_LABEL);
+                        final String syntacticPattern = simpleSentenceObject.getString(KEY_SYNTACTIC_PATTERN);
 
                         generateNGramForSyntacticPattern(label, syntacticPattern, labelToPatternFrequencies);
                     }
@@ -98,7 +85,6 @@ public class FeatureExtractor {
             System.out.println(topKPatterns);
             
             generateComparisonFiles(labelToPatternFrequencies);
-            System.out.println(labelToPatternFrequencies);
             System.out.println(labelToPatternFrequencies);
         } catch (final Exception e) {
             e.printStackTrace();
@@ -111,7 +97,7 @@ public class FeatureExtractor {
      * @param syntacticPattern: the syntactic pattern.
      * @param nGrams: The n-grams corresponding to each label. 
      */
-    private static void generateNGramForSyntacticPattern(final String label,
+    private void generateNGramForSyntacticPattern(final String label,
                                        final String syntacticPattern,
                                        Map<String, Map<String, Integer>> nGrams){
         Map<String, Integer> frequency;
@@ -134,7 +120,7 @@ public class FeatureExtractor {
         }
     }
     
-    private static SortedSet<VariantPattern> getTopKVariantPatterns(final Map<String, Map<String, Integer>> featureMap, final int k, final int difference){
+    private SortedSet<VariantPattern> getTopKVariantPatterns(final Map<String, Map<String, Integer>> featureMap, final int k, final int difference){
     	
     	final SortedSet<VariantPattern> topKVariantPatterns = new TreeSet<>(new Comparator<VariantPattern>() {
 			@Override
@@ -179,7 +165,7 @@ public class FeatureExtractor {
      * Generates comparison CSVs for each combination of two labels found in featureMap.
      * @param featureMap The map of labels to pattern frequencies.
      */
-    private static void generateComparisonFiles(final Map<String, Map<String, Integer>> featureMap) {
+    private void generateComparisonFiles(final Map<String, Map<String, Integer>> featureMap) {
     	Object[] labels = featureMap.keySet().toArray();
     	final int noOfLabels = labels.length;
     	
@@ -216,54 +202,69 @@ public class FeatureExtractor {
 
     /**
      *  Get the sentence dependencies and relation tags for each sentence in the question.
-     * **/
-    private static void getDependencies(){
-        Map<Integer, Map<Integer, List<FeatureDependency>>> featureDependencyMap = new HashMap<>();
-        final String datasetFilePath = URLDecoder.decode(Thread.currentThread()
-                .getContextClassLoader()
-                .getResource(ADD_SUB_FILE_PATH)
-                .getPath());
+     *  @param questionObject: the json object of the question.
+     **/
+    private QuestionInstance extractDependencyFeatures(final JsonObject questionObject){
+    	final SortedSet<SentenceInstance> sentenceInstances = new TreeSet<>(getSentenceInstancesComparator());
+        
+        final int questionIndex = questionObject.getInt(KEY_PARENT_INDEX);
+        final JsonArray sentences = questionObject.getJsonArray(KEY_SENTENCES);
 
-        try {
-            final InputStream inputFileStream = new FileInputStream(datasetFilePath);
-            final JsonReader jsonReader = Json.createReader(inputFileStream);
-            final JsonArray fileArray = jsonReader.readArray();
+        for (int sentenceCounter = 0; sentenceCounter < sentences.size(); sentenceCounter++) {
+        	final int sentenceIndex = sentenceCounter + 1;
+        	final Set<FeatureDependency> dependencies = new HashSet<>();
+            final JsonObject sentenceObject = sentences.getJsonObject(sentenceCounter);
+            final String sentence = sentenceObject.getString(KEY_SENTENCE);
+            final StringReader textReader = new StringReader(sentence);
+            final DocumentPreprocessor textProcessor = new DocumentPreprocessor(textReader);
+            textProcessor.setTokenizerFactory(TREE_LANGUAGE_PACK.getTokenizerFactory());
 
-            for (int questionCounter = 0; questionCounter < fileArray.size(); questionCounter++) {
-                final JsonObject questionObject = fileArray.getJsonObject(questionCounter);
-                Map<Integer, List<FeatureDependency>> sentenceDependencyMap = new HashMap<>();
-                List<FeatureDependency> dependencyList = new ArrayList<>();
-                final JsonArray sentences = questionObject.getJsonArray(SENTENCES);
+            for (final List<HasWord> sentenceWordList : textProcessor) {
+                final List<TaggedWord> taggedWords = MAXENT_TAGGER.tagSentence(sentenceWordList);
+                final GrammaticalStructure grammaticalStructure = DEPENDENCY_PARSER.predict(taggedWords);
+                final Collection<TypedDependency> sentenceDependencies = grammaticalStructure.typedDependenciesCCprocessed();
 
-                for (int sentenceCounter = 0; sentenceCounter < sentences.size(); sentenceCounter++) {
-                    final JsonObject sentenceObject = sentences.getJsonObject(sentenceCounter);
-                    final String sentence = sentenceObject.getString(SENTENCE);
-                    final StringReader textReader = new StringReader(sentence);
-                    final DocumentPreprocessor textProcessor = new DocumentPreprocessor(textReader);
-                    textProcessor.setTokenizerFactory(TREE_LANGUAGE_PACK.getTokenizerFactory());
-
-                    for (final List<HasWord> sentenceWordList : textProcessor) {
-                        final List<TaggedWord> taggedWords = MAXENT_TAGGER.tagSentence(sentenceWordList);
-                        final GrammaticalStructure grammaticalStructure = DEPENDENCY_PARSER.predict(taggedWords);
-                        final Collection<TypedDependency> sentenceDependencies = grammaticalStructure.typedDependenciesCCprocessed();
-
-                        for(final TypedDependency sentenceDependency : sentenceDependencies){
-                            final String relationTag = sentenceDependency.reln().getShortName();
-                            final String depTag = sentenceDependency.dep().tag() != null ?  sentenceDependency.dep().tag().toString() : "";
-                            final String govTag = sentenceDependency.gov().tag() != null ?  sentenceDependency.gov().tag().toString() : "";
-                            dependencyList.add(new FeatureDependency(relationTag, depTag, govTag));
-                        }
-                    }
-                    sentenceDependencyMap.put(sentenceCounter + 1, dependencyList);
+                for(final TypedDependency sentenceDependency : sentenceDependencies){
+                    final String relationTag = sentenceDependency.reln().getShortName();
+                    final String depTag = sentenceDependency.dep().tag() != null ?  sentenceDependency.dep().tag().toString() : "";
+                    final String govTag = sentenceDependency.gov().tag() != null ?  sentenceDependency.gov().tag().toString() : "";
+                    final FeatureDependency currentFeatureDependency = new FeatureDependency(relationTag, depTag, govTag); 
+                    dependencies.add(currentFeatureDependency);
                 }
-                featureDependencyMap.put(questionCounter + 1, sentenceDependencyMap);
-            }
-
-            System.out.print(featureDependencyMap);
+            }            
+            final SentenceInstance sentenceInstance = new SentenceInstance(questionIndex, sentenceIndex, sentence, dependencies);
+            sentenceInstances.add(sentenceInstance);
         }
-        catch (final Exception e){
-            e.printStackTrace();
-        }
+        final QuestionInstance questionInstance = new QuestionInstance(questionIndex, sentenceInstances);
+        return questionInstance;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    private Comparator<SentenceInstance> getSentenceInstancesComparator() {
+    	return new Comparator<SentenceInstance> () {
 
+			@Override
+			public int compare(final SentenceInstance o1, final SentenceInstance o2) {
+				return o1.getSentenceIndex() - o2.getSentenceIndex();
+			}
+    		
+    	};
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    private Comparator<QuestionInstance> getQuestionInstancesComparator() {
+    	return new Comparator<QuestionInstance> () {
+			@Override
+			public int compare(final QuestionInstance o1, final QuestionInstance o2) {
+				return o1.getQuestionIndex() - o2.getQuestionIndex();
+			}
+    		
+    	};
     }
 }
