@@ -42,6 +42,7 @@ public class FeatureExtractor {
     }
 
     private final SortedSet<QuestionInstance> mQuestionInstances;
+    private final Map<String, Integer> mWordFrequency;
     
     public static void main(final String[] args) { 
     	FeatureExtractor extractor = new FeatureExtractor();
@@ -51,6 +52,7 @@ public class FeatureExtractor {
 
     public FeatureExtractor() {
     	mQuestionInstances = new TreeSet<>(getQuestionInstancesComparator());
+        mWordFrequency = new HashMap<>();
     }
     /**
      * Extracts features from the dataset.
@@ -244,29 +246,37 @@ public class FeatureExtractor {
         final JsonArray sentences = questionObject.getJsonArray(KEY_SENTENCES);
 
         SentenceInstance lastSentence = null;
-        
-        for (int sentenceCounter = 0; sentenceCounter < sentences.size(); sentenceCounter++) {
-        	final int sentenceIndex = sentenceCounter + 1;
-        	final Set<FeatureDependency> dependencies = new HashSet<>();
+        final int sentenceSize = sentences.size();
+        for (int sentenceCounter = 0; sentenceCounter < sentenceSize; sentenceCounter++) {
             final JsonObject sentenceObject = sentences.getJsonObject(sentenceCounter);
-            final String sentence = sentenceObject.getString(KEY_SENTENCE);
-            final StringReader textReader = new StringReader(sentence);
-            final DocumentPreprocessor textProcessor = new DocumentPreprocessor(textReader);
-            textProcessor.setTokenizerFactory(TREE_LANGUAGE_PACK.getTokenizerFactory());
+            final JsonArray simpleSentences = sentenceObject.getJsonArray(KEY_SIMPLIFIED_SENTENCES);
 
-            for (final List<HasWord> sentenceWordList : textProcessor) {
-                final List<TaggedWord> taggedWords = MAXENT_TAGGER.tagSentence(sentenceWordList);
-                final GrammaticalStructure grammaticalStructure = DEPENDENCY_PARSER.predict(taggedWords);
-                final Collection<TypedDependency> sentenceDependencies = grammaticalStructure.typedDependenciesCCprocessed();
+            final int simpleSentenceSize = simpleSentences.size();
+            for (int simpleSentenceCounter = 0; simpleSentenceCounter < simpleSentenceSize; simpleSentenceCounter++) {
+                final int simpleSentenceIndex = simpleSentenceCounter + 1;
+                final Set<FeatureDependency> dependencies = new HashSet<>();
+                final JsonObject simpleSentenceObject = simpleSentences.getJsonObject(simpleSentenceCounter);
 
-                for(final TypedDependency sentenceDependency : sentenceDependencies){
-                    final FeatureDependency currentFeatureDependency = getFeatureDependency(sentenceDependency);
-                    dependencies.add(currentFeatureDependency);
+                final String sentence = simpleSentenceObject.getString(KEY_SENTENCE);
+                final StringReader textReader = new StringReader(sentence);
+                final DocumentPreprocessor textProcessor = new DocumentPreprocessor(textReader);
+                textProcessor.setTokenizerFactory(TREE_LANGUAGE_PACK.getTokenizerFactory());
+
+                for (final List<HasWord> sentenceWordList : textProcessor) {
+                    final List<TaggedWord> taggedWords = MAXENT_TAGGER.tagSentence(sentenceWordList);
+                    final GrammaticalStructure grammaticalStructure = DEPENDENCY_PARSER.predict(taggedWords);
+                    final Collection<TypedDependency> sentenceDependencies = grammaticalStructure.typedDependenciesCCprocessed();
+
+                    for(final TypedDependency sentenceDependency : sentenceDependencies){
+                        final FeatureDependency currentFeatureDependency = getFeatureDependency(sentenceDependency);
+                        dependencies.add(currentFeatureDependency);
+                    }
                 }
-            }            
-            final SentenceInstance sentenceInstance = new SentenceInstance(questionIndex, sentenceIndex, sentence, dependencies);
-            lastSentence = sentenceInstance;
-            sentenceInstances.add(sentenceInstance);
+
+                final SentenceInstance sentenceInstance = new SentenceInstance(questionIndex, simpleSentenceIndex, sentence, dependencies);
+                lastSentence = sentenceInstance;
+                sentenceInstances.add(sentenceInstance);
+            }
         }
         
         if (lastSentence != null) {
@@ -274,7 +284,12 @@ public class FeatureExtractor {
         }
         
         final QuestionInstance questionInstance = new QuestionInstance(questionIndex, sentenceInstances);
+        System.out.print(questionInstance);
         return questionInstance;
+    }
+
+    private void generateWordFrequency(final JsonObject sentenceObject){
+        //TODO
     }
 
     /**
