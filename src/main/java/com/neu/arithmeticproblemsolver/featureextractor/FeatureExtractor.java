@@ -1,6 +1,8 @@
 package com.neu.arithmeticproblemsolver.featureextractor;
 
 import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.*;
+import static com.neu.arithmeticproblemsolver.featureextractor.FeaturesUtilities.dependencyToWord;
+
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.TaggedWord;
 import edu.stanford.nlp.parser.nndep.DependencyParser;
@@ -44,7 +46,7 @@ public class FeatureExtractor {
     public static void main(final String[] args) { 
     	FeatureExtractor extractor = new FeatureExtractor();
     	extractor.extractFeatures();
-    	System.out.println(extractor.mQuestionInstances);
+    	//System.out.println(extractor.mQuestionInstances);
     }
 
     public FeatureExtractor() {
@@ -81,11 +83,13 @@ public class FeatureExtractor {
                 }
             }
             
-            final SortedSet<VariantPattern> topKPatterns = getTopKVariantPatterns(labelToPatternFrequencies, 20, 10);
+            getRankedNGrams(labelToPatternFrequencies);
+            
+           /* final SortedSet<VariantPattern> topKPatterns = getTopKVariantPatterns(labelToPatternFrequencies, 20, 10);
             System.out.println(topKPatterns);
             
             generateComparisonFiles(labelToPatternFrequencies);
-            System.out.println(labelToPatternFrequencies);
+            System.out.println(labelToPatternFrequencies);*/
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -120,7 +124,37 @@ public class FeatureExtractor {
         }
     }
     
-    private SortedSet<VariantPattern> getTopKVariantPatterns(final Map<String, Map<String, Integer>> featureMap, final int k, final int difference){
+    private Set<String> getRankedNGrams(final Map<String, Map<String, Integer>> patternMaps) {
+    	final Set<String> rankedNGrams = new HashSet<>();
+    	for (int i = 2; i<=20; i++) {
+    		System.out.print("Patterns of size:"+i+" "+getPatternsOfKLength(patternMaps, i).size() + "\n");
+    	}
+    	
+    	return rankedNGrams;
+    }
+    
+    /**
+     * Gets the patterns of length k from the pattern map.
+     * @param patternMaps: the patterns with their label.
+     * @param k: length of k patterns will be returned.
+     * @return k-grams.
+     */
+    private Set<String> getPatternsOfKLength(final Map<String, Map<String, Integer>> patternMaps, final int k) {
+    	final Set<String> kGrams = new HashSet<>();
+    	for (Entry<String, Map<String, Integer>> patternMap: patternMaps.entrySet()) {
+    		final String label = patternMap.getKey();
+    		final Map<String, Integer> patterns = patternMap.getValue();
+    		
+    		for(final String key: patterns.keySet()) {
+    			if (key.length() == k) {
+    				kGrams.add(key);
+    			}
+    		}
+    	}
+    	return kGrams;
+    }
+    
+    private SortedSet<VariantPattern> getTopKVariantPatterns(final Map<String, Map<String, Integer>> patternMap, final int k, final int difference){
     	
     	final SortedSet<VariantPattern> topKVariantPatterns = new TreeSet<>(new Comparator<VariantPattern>() {
 			@Override
@@ -129,13 +163,13 @@ public class FeatureExtractor {
 			}
     	});
 
-    	final Map<String, Integer> additionMap = featureMap.get(ADDITION_LABEL);
+    	final Map<String, Integer> additionMap = patternMap.get(ADDITION_LABEL);
     	int noOfVariantPatternsFound = 0;
     	for (final String pattern: additionMap.keySet()) {
     		
     		boolean patternExistsInEveryOtherMap = true;
     		final VariantPattern variantPattern = new VariantPattern(pattern);
-    		for (final Entry<String, Map<String, Integer>> patternMaps: featureMap.entrySet()) {
+    		for (final Entry<String, Map<String, Integer>> patternMaps: patternMap.entrySet()) {
     			final String label = patternMaps.getKey();
     			final Map<String, Integer> patternFrequencies = patternMaps.getValue();
     			    			
@@ -226,10 +260,7 @@ public class FeatureExtractor {
                 final Collection<TypedDependency> sentenceDependencies = grammaticalStructure.typedDependenciesCCprocessed();
 
                 for(final TypedDependency sentenceDependency : sentenceDependencies){
-                    final String relationTag = sentenceDependency.reln().getShortName();
-                    final String depTag = sentenceDependency.dep().tag() != null ?  sentenceDependency.dep().tag().toString() : "";
-                    final String govTag = sentenceDependency.gov().tag() != null ?  sentenceDependency.gov().tag().toString() : "";
-                    final FeatureDependency currentFeatureDependency = new FeatureDependency(relationTag, depTag, govTag); 
+                    final FeatureDependency currentFeatureDependency = getFeatureDependency(sentenceDependency);
                     dependencies.add(currentFeatureDependency);
                 }
             }            
@@ -245,6 +276,32 @@ public class FeatureExtractor {
         final QuestionInstance questionInstance = new QuestionInstance(questionIndex, sentenceInstances);
         return questionInstance;
     }
+
+    /**
+     * Get the feature dependency from the given TypedDependency.
+     * @param sentenceDependency: the typed dependency.
+     * @return the feature dependency.
+     */
+	private FeatureDependency getFeatureDependency(final TypedDependency sentenceDependency) {
+		final String relationTag = sentenceDependency.reln().getShortName();
+		final String depTag = sentenceDependency.dep().tag() != null ?  sentenceDependency.dep().tag().toString() : "";
+		final String govTag = sentenceDependency.gov().tag() != null ?  sentenceDependency.gov().tag().toString() : "";
+		final int depIndex = sentenceDependency.dep().index();
+		final int govIndex = sentenceDependency.gov().index();
+		final String depWord = dependencyToWord(sentenceDependency.dep());
+		final String govWord = dependencyToWord(sentenceDependency.gov());
+		
+		final FeatureDependency currentFeatureDependency = FeatureDependency.builder()
+				.relation(relationTag)
+				.depTag(depTag)
+				.govTag(govTag)
+				.depIndex(depIndex)
+				.govIndex(govIndex)
+				.depWord(depWord)
+				.govWord(govWord)
+				.build();
+		return currentFeatureDependency;
+	}
     
     /**
      * 

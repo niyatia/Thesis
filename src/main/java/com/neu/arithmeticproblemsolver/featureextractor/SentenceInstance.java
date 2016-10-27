@@ -31,7 +31,15 @@ public class SentenceInstance {
 	private final int mSentenceIndex;
 	private final Set<FeatureDependency> mFeatureDependencies;
 	
-	public SentenceInstance (final int questionIndex, final int sentenceIndex, final String sentenceText, final Set<FeatureDependency> featureDependecies) {
+	/**
+	 * Package-Protected Constructor 
+	 * @param questionIndex: index of the question in the dataset.
+	 * @param sentenceIndex: index of the sentence in the question.
+	 * @param sentenceText; text of the sentene.
+	 * @param featureDependecies: dependencies associated with this sentence.
+	 */
+	SentenceInstance (final int questionIndex, final int sentenceIndex,
+			final String sentenceText, final Set<FeatureDependency> featureDependecies) {
 		mQuestionIndex = questionIndex;
 		mSentenceText = sentenceText;
 		mFeatureDependencies = featureDependecies;
@@ -40,8 +48,7 @@ public class SentenceInstance {
 	}
 	
 	/**
-	 * 
-	 * 
+	 * extracts the feature values from the feature dependencies.
 	 */
 	private void processFeatureDependencies() {
 		//TODO
