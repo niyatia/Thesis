@@ -159,8 +159,7 @@ public class FeatureExtractor {
     	}    	
     	return topKVariantPatterns;
     }
-    
-    
+        
     /**
      * Generates comparison CSVs for each combination of two labels found in featureMap.
      * @param featureMap The map of labels to pattern frequencies.
@@ -210,6 +209,8 @@ public class FeatureExtractor {
         final int questionIndex = questionObject.getInt(KEY_PARENT_INDEX);
         final JsonArray sentences = questionObject.getJsonArray(KEY_SENTENCES);
 
+        SentenceInstance lastSentence = null;
+        
         for (int sentenceCounter = 0; sentenceCounter < sentences.size(); sentenceCounter++) {
         	final int sentenceIndex = sentenceCounter + 1;
         	final Set<FeatureDependency> dependencies = new HashSet<>();
@@ -233,8 +234,14 @@ public class FeatureExtractor {
                 }
             }            
             final SentenceInstance sentenceInstance = new SentenceInstance(questionIndex, sentenceIndex, sentence, dependencies);
+            lastSentence = sentenceInstance;
             sentenceInstances.add(sentenceInstance);
         }
+        
+        if (lastSentence != null) {
+        	lastSentence.setItALastSentence(true);
+        }
+        
         final QuestionInstance questionInstance = new QuestionInstance(questionIndex, sentenceInstances);
         return questionInstance;
     }

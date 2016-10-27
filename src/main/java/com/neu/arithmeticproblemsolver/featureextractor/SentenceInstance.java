@@ -1,5 +1,7 @@
 package com.neu.arithmeticproblemsolver.featureextractor;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import lombok.Getter;
@@ -43,8 +45,48 @@ public class SentenceInstance {
 	 */
 	private void processFeatureDependencies() {
 		//TODO
+		mHasACardinal = hasAPartsOfSpeechAndRelations(true, "CD", "dobj");
+		mHasASubject = hasAPartsOfSpeechAndRelations(true, "nsubj");
+		mHasADirectObject = hasAPartsOfSpeechAndRelations(true, "dobj");
+		mHasAWHAdverb = hasAPartsOfSpeechAndRelations(true, "WRB");
+		mHasAExpletive = hasAPartsOfSpeechAndRelations(true, "EX");
+		mHasComparativeAdverb = hasAPartsOfSpeechAndRelations(true, "RBR");
+		mHasSuperlativeAdverb = hasAPartsOfSpeechAndRelations(true, "RBS");
+		mHasPastFormVerb = hasAPartsOfSpeechAndRelations(true, "VBD");
+		mHasBaseFormVerb = hasAPartsOfSpeechAndRelations(true, "VB");
+		
+		mIsItAFirstSentence = isFirstSentence();
 	}
 
+	private boolean isFirstSentence() {
+		return mSentenceIndex == 1;
+	}
+	
+	private boolean hasAPartsOfSpeechAndRelations(final boolean allTagsAreMust, final String... requiredTagsAndRelations) {
+		
+		final Set<String> tagsAndRelations = new HashSet<>();
+		tagsAndRelations.addAll(Arrays.asList(requiredTagsAndRelations));
+		
+		final Set<String> foundTagsAndRelations = new HashSet<>();
+		
+		for (final FeatureDependency featureDependency: mFeatureDependencies) {
+			final String relation = featureDependency.getRelation();
+			final String dep = featureDependency.getDepTag();
+			final String gov = featureDependency.getGovTag();
+			
+			if (tagsAndRelations.contains(relation)) {
+				foundTagsAndRelations.add(relation);
+			} else if (tagsAndRelations.contains(dep)) {
+				foundTagsAndRelations.add(dep);
+			} else if (tagsAndRelations.contains(gov)) {
+				foundTagsAndRelations.add(gov);
+			}		
+		}
+				
+		return ((allTagsAreMust && foundTagsAndRelations.size() == tagsAndRelations.size()) ||
+				(!allTagsAreMust && foundTagsAndRelations.size() > 0));
+	}
+	
 	@Override
 	public String toString() {
 		return "SentenceInstance [mSentenceIndex=" + mSentenceIndex + ", mSentenceText=" + mSentenceText + ", mDependencies=" + mFeatureDependencies + "]";
