@@ -8,9 +8,9 @@ import lombok.experimental.Accessors;
 public class RankedNGram {
 
 	private final String mPattern;
-	private final int mScore;
+	private final float mScore;
 	
-	public RankedNGram(final String pattern, final int score) {
+	public RankedNGram(final String pattern, final float score) {
 		mPattern = pattern;
 		mScore = score;
 	}
