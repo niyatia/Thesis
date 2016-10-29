@@ -1,7 +1,7 @@
 package com.neu.arithmeticproblemsolver.ngramranker;
 
 import java.util.Comparator;
-import java.util.Set;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -10,16 +10,18 @@ public class RankerFeatures {
 	private static final String NVN_TRIPLET = "NVN";
 	private static final String EVN_TRIPLET = "EVN";
 	private static final String AN_TRIPLET = "AN";
-
-	public SortedSet<RankedNGram> extractTopKPatterns(final Set<String> patterns) {
+	private int totalNoOfPatterns;
+	
+	public SortedSet<RankedNGram> extractTopKPatterns(final Map<String, Integer> patternCounts) {
 		final SortedSet<RankedNGram> rankedNGrams = new TreeSet<>(getRankedNGramsComparator());
+		totalNoOfPatterns = getTotalPatternCount(patternCounts);
 		
-		for (final String pattern: patterns) {
+		for (final String pattern: patternCounts.keySet()) {
 			final float neighboringPOSScore = getNeighboringScore(pattern);
 			final float tripletScore = getTripletScore(pattern);
 			final float anPatternScore = getANPatternScore(pattern);
 			final float maxPatternLimitScore = getMaxOccurenceLimitScore(pattern);
-			final float frequencyRatioScore = getFrequencyCountScore(pattern);
+			final float frequencyRatioScore = getFrequencyCountScore(pattern, patternCounts);
 			
 			final float score = neighboringPOSScore + tripletScore + anPatternScore +
 					maxPatternLimitScore + frequencyRatioScore;
@@ -28,6 +30,14 @@ public class RankerFeatures {
 		}
 		
 		return rankedNGrams;
+	}
+	
+	private int getTotalPatternCount(final Map<String, Integer> patternCounts) {
+		int totalCount = 0;
+		for (final Integer count: patternCounts.values()) {
+			totalCount += count;
+		}
+		return totalCount;
 	}
 	
 	/**
@@ -73,15 +83,21 @@ public class RankerFeatures {
 	
 	private float getTripletScore(final String pattern) {
 		float score = 0;
-		if (pattern.length() < 3) {
-			return score;
-		}
 		int firstNounIndex = pattern.indexOf("N");
 		int expletiveIndex = pattern.indexOf("E");
 		int lastNounIndex = pattern.lastIndexOf("N");
 		
+		if (pattern.length() < 3 || (firstNounIndex == -1 && expletiveIndex == -1)) {
+			return score;
+		}
 		
-		return 0;
+		int currentFromIndex = firstNounIndex == -1 ? expletiveIndex : firstNounIndex;
+	
+		int verbIndex = pattern.indexOf("V", currentFromIndex);
+		if (verbIndex != -1 || verbIndex < lastNounIndex) {
+			score = 1;
+		}		
+		return score;
 	}
 	
 	private float getANPatternScore(final String pattern) {
@@ -96,17 +112,20 @@ public class RankerFeatures {
 		return 0;
 	}
 	
-	private float getFrequencyCountScore(final String pattern) {
-		return 0;
+	private float getFrequencyCountScore(final String pattern, final Map<String, Integer> patternCounts) {
+		final float currentPatternCount = patternCounts.containsKey(pattern) ? (float) patternCounts.get(pattern) : 0;
+		return currentPatternCount/totalNoOfPatterns;
 	}
 	
 	private Comparator<RankedNGram> getRankedNGramsComparator() {
 		return new Comparator<RankedNGram>() {
 			@Override
 			public int compare(RankedNGram o1, RankedNGram o2) {
-				return o1.getScore() - o2.getScore();
-			}
-			
+				if (o1.getScore() <= o2.getScore()) {
+					return -1;
+				}
+				return 1;
+			}			
 		};
 	}
 }
