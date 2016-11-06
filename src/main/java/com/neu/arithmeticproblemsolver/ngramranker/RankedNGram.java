@@ -14,4 +14,9 @@ public class RankedNGram {
 		mPattern = pattern;
 		mScore = score;
 	}
+
+	@Override
+	public String toString() {
+		return "RankedNGram [mPattern=" + mPattern + ", mScore=" + mScore + "]";
+	}
 }

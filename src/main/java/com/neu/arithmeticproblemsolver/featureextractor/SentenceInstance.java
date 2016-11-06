@@ -4,12 +4,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 @Accessors (prefix = "m")
 public class SentenceInstance {
 	
@@ -30,6 +32,8 @@ public class SentenceInstance {
 	private final String mSentenceText;
 	private final int mSentenceIndex;
 	private final Set<FeatureDependency> mFeatureDependencies;
+	private final String mSyntacticPattern;
+	private final String mLabel;
 	
 	/**
 	 * Package-Protected Constructor 
@@ -38,13 +42,15 @@ public class SentenceInstance {
 	 * @param sentenceText; text of the sentene.
 	 * @param featureDependecies: dependencies associated with this sentence.
 	 */
-	SentenceInstance (final int questionIndex, final int sentenceIndex,
-			final String sentenceText, final Set<FeatureDependency> featureDependecies) {
+	SentenceInstance (final int questionIndex, final int sentenceIndex, final String sentenceText,
+			final Set<FeatureDependency> featureDependecies, final String syntacticPattern, final String label) {
 		mQuestionIndex = questionIndex;
 		mSentenceText = sentenceText;
 		mFeatureDependencies = featureDependecies;
 		mSentenceIndex = sentenceIndex;
 		processFeatureDependencies();
+		mSyntacticPattern = syntacticPattern;
+		mLabel = label;
 	}
 	
 	/**
@@ -61,12 +67,6 @@ public class SentenceInstance {
 		mHasSuperlativeAdverb = hasAPartsOfSpeechAndRelations(true, "RBS");
 		mHasPastFormVerb = hasAPartsOfSpeechAndRelations(true, "VBD");
 		mHasBaseFormVerb = hasAPartsOfSpeechAndRelations(true, "VB");
-		
-		mIsItAFirstSentence = isFirstSentence();
-	}
-
-	private boolean isFirstSentence() {
-		return mSentenceIndex == 1;
 	}
 	
 	private boolean hasAPartsOfSpeechAndRelations(final boolean allTagsAreMust, final String... requiredTagsAndRelations) {
@@ -97,6 +97,91 @@ public class SentenceInstance {
 	@Override
 	public String toString() {
 		return "SentenceInstance [mSentenceIndex=" + mSentenceIndex + ", mSentenceText=" + mSentenceText + ", mDependencies=" + mFeatureDependencies + "]";
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SentenceInstance other = (SentenceInstance) obj;
+		if (mFeatureDependencies == null) {
+			if (other.mFeatureDependencies != null)
+				return false;
+		} else if (!mFeatureDependencies.equals(other.mFeatureDependencies))
+			return false;
+		if (mHasACardinal != other.mHasACardinal)
+			return false;
+		if (mHasADirectObject != other.mHasADirectObject)
+			return false;
+		if (mHasAExpletive != other.mHasAExpletive)
+			return false;
+		if (mHasASubject != other.mHasASubject)
+			return false;
+		if (mHasAWHAdverb != other.mHasAWHAdverb)
+			return false;
+		if (mHasAnActionVerb != other.mHasAnActionVerb)
+			return false;
+		if (mHasBaseFormVerb != other.mHasBaseFormVerb)
+			return false;
+		if (mHasComparativeAdverb != other.mHasComparativeAdverb)
+			return false;
+		if (mHasPastFormVerb != other.mHasPastFormVerb)
+			return false;
+		if (mHasSuperlativeAdverb != other.mHasSuperlativeAdverb)
+			return false;
+		if (mIsItAFirstSentence != other.mIsItAFirstSentence)
+			return false;
+		if (mIsItALastSentence != other.mIsItALastSentence)
+			return false;
+		if (mLabel == null) {
+			if (other.mLabel != null)
+				return false;
+		} else if (!mLabel.equals(other.mLabel))
+			return false;
+		if (mQuestionIndex != other.mQuestionIndex)
+			return false;
+		if (mSentenceIndex != other.mSentenceIndex)
+			return false;
+		if (mSentenceText == null) {
+			if (other.mSentenceText != null)
+				return false;
+		} else if (!mSentenceText.equals(other.mSentenceText))
+			return false;
+		if (mSyntacticPattern == null) {
+			if (other.mSyntacticPattern != null)
+				return false;
+		} else if (!mSyntacticPattern.equals(other.mSyntacticPattern))
+			return false;
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((mFeatureDependencies == null) ? 0 : mFeatureDependencies.hashCode());
+		result = prime * result + (mHasACardinal ? 1231 : 1237);
+		result = prime * result + (mHasADirectObject ? 1231 : 1237);
+		result = prime * result + (mHasAExpletive ? 1231 : 1237);
+		result = prime * result + (mHasASubject ? 1231 : 1237);
+		result = prime * result + (mHasAWHAdverb ? 1231 : 1237);
+		result = prime * result + (mHasAnActionVerb ? 1231 : 1237);
+		result = prime * result + (mHasBaseFormVerb ? 1231 : 1237);
+		result = prime * result + (mHasComparativeAdverb ? 1231 : 1237);
+		result = prime * result + (mHasPastFormVerb ? 1231 : 1237);
+		result = prime * result + (mHasSuperlativeAdverb ? 1231 : 1237);
+		result = prime * result + (mIsItAFirstSentence ? 1231 : 1237);
+		result = prime * result + (mIsItALastSentence ? 1231 : 1237);
+		result = prime * result + ((mLabel == null) ? 0 : mLabel.hashCode());
+		result = prime * result + mQuestionIndex;
+		result = prime * result + mSentenceIndex;
+		result = prime * result + ((mSentenceText == null) ? 0 : mSentenceText.hashCode());
+		result = prime * result + ((mSyntacticPattern == null) ? 0 : mSyntacticPattern.hashCode());
+		return result;
 	}
 	
 	

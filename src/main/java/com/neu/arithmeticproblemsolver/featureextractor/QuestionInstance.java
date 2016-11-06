@@ -1,6 +1,6 @@
 package com.neu.arithmeticproblemsolver.featureextractor;
 
-import java.util.SortedSet;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -10,9 +10,9 @@ import lombok.experimental.Accessors;
 public class QuestionInstance {
 
 	private final int mQuestionIndex;
-	private final SortedSet<SentenceInstance> mSentenceInstances;
+	private final List<SentenceInstance> mSentenceInstances;
 	
-	public QuestionInstance(final int questionIndex, final SortedSet<SentenceInstance> sentenceInstances) {
+	public QuestionInstance(final int questionIndex, final List<SentenceInstance> sentenceInstances) {
 		mQuestionIndex = questionIndex;
 		mSentenceInstances = sentenceInstances;
 	}

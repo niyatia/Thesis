@@ -1,7 +1,40 @@
 package com.neu.arithmeticproblemsolver.featureextractor;
 
-import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.*;
 import static com.neu.arithmeticproblemsolver.featureextractor.FeaturesUtilities.dependencyToWord;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.TRAINING_DATA_FILE_PATH;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.TEST_DATA_FILE_PATH;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.TRAINING_FEATURES_FILE_PATH;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.TEST_FEATURES_FILE_PATH;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.KEY_LABEL;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.KEY_PARENT_INDEX;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.KEY_SENTENCE;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.KEY_SENTENCES;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.KEY_SIMPLIFIED_SENTENCES;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.KEY_SYNTACTIC_PATTERN;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+
+import com.neu.arithmeticproblemsolver.ngramranker.RankerFeatures;
 
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.TaggedWord;
@@ -13,18 +46,6 @@ import edu.stanford.nlp.trees.PennTreebankLanguagePack;
 import edu.stanford.nlp.trees.TreebankLanguagePack;
 import edu.stanford.nlp.trees.TypedDependency;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.StringReader;
-
-import java.util.*;
-import java.util.Map.Entry;
-
 
 /**
  * Extracts the frequencies of n-gram sub pattern features for each label in the dataset.
@@ -34,6 +55,8 @@ public class FeatureExtractor {
     private static final TreebankLanguagePack TREE_LANGUAGE_PACK;
     private static final MaxentTagger MAXENT_TAGGER;
     private static final DependencyParser DEPENDENCY_PARSER;
+    private static final boolean CONSIDER_NGRAM_FEATURES = false;
+    private static final boolean CONSIDER_WORD_FREQUENCY_FEATURES = false;
     
     static {
         TREE_LANGUAGE_PACK = new PennTreebankLanguagePack();
@@ -47,6 +70,7 @@ public class FeatureExtractor {
     public static void main(final String[] args) { 
     	FeatureExtractor extractor = new FeatureExtractor();
     	extractor.extractFeatures();
+    	extractor.printFeatures();
     	//System.out.println(extractor.mQuestionInstances);
     }
 
@@ -59,16 +83,18 @@ public class FeatureExtractor {
      */
     public void extractFeatures(){
         try {
-            final InputStream inputFileStream = new FileInputStream(ADD_SUB_FILE_PATH);
+            final InputStream inputFileStream = new FileInputStream(TEST_DATA_FILE_PATH);
             final JsonReader jsonReader = Json.createReader(inputFileStream);
             final JsonArray fileArray = jsonReader.readArray();
             final Map<String, Map<String, Integer>> labelToPatternFrequencies = new HashMap<>();
-
+            System.out.println("No of questions:" + fileArray.size());
+            int noOfSentencesCount = 0;
             for (int questionCounter = 0; questionCounter < fileArray.size(); questionCounter++) {
+            	
                 final JsonObject questionObject = fileArray.getJsonObject(questionCounter);
                 final int questionIndex = questionObject.getInt(KEY_PARENT_INDEX);
                 final JsonArray sentences = questionObject.getJsonArray(KEY_SENTENCES);
-                final SortedSet<SentenceInstance> sentenceInstances = new TreeSet<>(getSentenceInstancesComparator());
+                final List<SentenceInstance> sentenceInstances = new ArrayList<>();
                 final int noOfSentences = sentences.size();
 
                 for (int sentenceCounter = 0; sentenceCounter < noOfSentences; sentenceCounter++) {
@@ -76,20 +102,29 @@ public class FeatureExtractor {
                     final JsonArray simplifiedSentences = sentenceObject.getJsonArray(KEY_SIMPLIFIED_SENTENCES);
                     final int noOfSimplifiedSentences = simplifiedSentences.size();
                     for (int simpleSentenceCounter = 0; simpleSentenceCounter < noOfSimplifiedSentences; simpleSentenceCounter++) {
-                        final int simpleSentenceIndex = simpleSentenceCounter + 1;
+                    	final int simpleSentenceIndex = simpleSentenceCounter + 1;
+                    	noOfSentencesCount++;
                         final JsonObject simpleSentenceObject = simplifiedSentences.getJsonObject(simpleSentenceCounter);
                         final String simpleSentence = simpleSentenceObject.getString((KEY_SENTENCE));
                         final String label = simpleSentenceObject.getString(KEY_LABEL);
                         final String syntacticPattern = simpleSentenceObject.getString(KEY_SYNTACTIC_PATTERN);
 
-                        final SentenceInstance sentenceInstance = getSentenceInstance(questionIndex, simpleSentenceIndex, simpleSentence);
-                        if (sentenceCounter == noOfSimplifiedSentences - 1) {
+                        final SentenceInstance sentenceInstance = getSentenceInstance(questionIndex, simpleSentenceIndex, simpleSentence, syntacticPattern, label);
+                        if (sentenceCounter == noOfSentences - 1 && simpleSentenceCounter == noOfSimplifiedSentences - 1) {
                             sentenceInstance.setItALastSentence(true);
+                        } else if (sentenceCounter == 0 && simpleSentenceCounter == 0){
+                        	sentenceInstance.setItAFirstSentence(true);
                         }
+                        
                         sentenceInstances.add(sentenceInstance);
 
-                        getWordFrequency(simpleSentence);
-                        generateNGramForSyntacticPattern(label, syntacticPattern, labelToPatternFrequencies);
+                        if (CONSIDER_WORD_FREQUENCY_FEATURES) {
+                        	getWordFrequency(simpleSentence);
+                        }
+                        
+                        if (CONSIDER_NGRAM_FEATURES) {
+                        	generateNGramForSyntacticPattern(label, syntacticPattern, labelToPatternFrequencies);
+                        }
                     }
                 }
 
@@ -97,13 +132,17 @@ public class FeatureExtractor {
                 mQuestionInstances.add(questionInstance);
             }
             
-            getRankedNGrams(labelToPatternFrequencies);
-            
-           /* final SortedSet<VariantPattern> topKPatterns = getTopKVariantPatterns(labelToPatternFrequencies, 20, 10);
-            System.out.println(topKPatterns);
-            
-            generateComparisonFiles(labelToPatternFrequencies);
-            System.out.println(labelToPatternFrequencies);*/
+            System.out.println("No of sentences:" + noOfSentencesCount);
+            int finalSentenceCount = 0;
+            for (final QuestionInstance questionInstance: mQuestionInstances) {				
+				for (final SentenceInstance sentenceInstance: questionInstance.getSentenceInstances()){
+					finalSentenceCount++;
+				}
+            }
+            System.out.println(finalSentenceCount);
+            if (CONSIDER_NGRAM_FEATURES) {
+            	getRankedNGrams(labelToPatternFrequencies);
+            }
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -144,6 +183,20 @@ public class FeatureExtractor {
     		System.out.print("Patterns of size:"+i+" "+getPatternsOfKLength(patternMaps, i).size() + "\n");
     	}
     	
+    	final Map<String, Integer> patternCounts = new HashMap<>();
+    	
+    	for(final Map<String, Integer> patternMap: patternMaps.values()) {
+    		for(final Entry<String, Integer> patternEntry: patternMap.entrySet()){
+    			final String key = patternEntry.getKey();
+    			final Integer value = patternEntry.getValue();
+    			final int currentCount = patternCounts.containsKey(key) ? patternCounts.get(key) : 0;
+    			patternCounts.put(key, currentCount + value);
+    		}
+    	}
+    	
+    	final RankerFeatures rankerFeatures = new RankerFeatures(patternCounts);
+    	System.out.println(rankerFeatures.getTopNGrams(10));
+    	FeaturesUtilities.setTopNGrams(rankerFeatures.getTopNGrams(10));
     	return rankedNGrams;
     }
     
@@ -167,85 +220,6 @@ public class FeatureExtractor {
     	}
     	return kGrams;
     }
-    
-    private SortedSet<VariantPattern> getTopKVariantPatterns(final Map<String, Map<String, Integer>> patternMap, final int k, final int difference){
-    	
-    	final SortedSet<VariantPattern> topKVariantPatterns = new TreeSet<>(new Comparator<VariantPattern>() {
-			@Override
-			public int compare(final VariantPattern o1, final VariantPattern o2) {
-				return o1.getSumOfCount() - o2.getSumOfCount();
-			}
-    	});
-
-    	final Map<String, Integer> additionMap = patternMap.get(ADDITION_LABEL);
-    	int noOfVariantPatternsFound = 0;
-    	for (final String pattern: additionMap.keySet()) {
-    		
-    		boolean patternExistsInEveryOtherMap = true;
-    		final VariantPattern variantPattern = new VariantPattern(pattern);
-    		for (final Entry<String, Map<String, Integer>> patternMaps: patternMap.entrySet()) {
-    			final String label = patternMaps.getKey();
-    			final Map<String, Integer> patternFrequencies = patternMaps.getValue();
-    			    			
-    			if (!patternFrequencies.containsKey(pattern)) {
-    				patternExistsInEveryOtherMap = false;
-    			} else {
-    				variantPattern.addCount(label, patternFrequencies.get(pattern));
-    			}
-    		}
-    		
-    		if (patternExistsInEveryOtherMap) {
-    			if (variantPattern.isDifferenceGreaterThanT(difference)) {
-    				topKVariantPatterns.add(variantPattern);
-    				noOfVariantPatternsFound++;
-    				
-    				if (noOfVariantPatternsFound == k) {
-    					break;
-    				}
-    			}
-    		}
-    	}    	
-    	return topKVariantPatterns;
-    }
-        
-    /**
-     * Generates comparison CSVs for each combination of two labels found in featureMap.
-     * @param featureMap The map of labels to pattern frequencies.
-     */
-    private void generateComparisonFiles(final Map<String, Map<String, Integer>> featureMap) {
-    	Object[] labels = featureMap.keySet().toArray();
-    	final int noOfLabels = labels.length;
-    	
-    	for (int labelIndex = 0; labelIndex < noOfLabels; labelIndex++) {
-    		final String currentLabel = (String)labels[labelIndex];
-    		
-    		for (int comparisonLabelIndex = labelIndex + 1; comparisonLabelIndex < noOfLabels; comparisonLabelIndex++) {
-    			final String currentComparisonLabel = (String)labels[comparisonLabelIndex];
-    			String fileName = "Comparison-";
-        		fileName += LABEL_STRINGS.containsKey(currentLabel) ? LABEL_STRINGS.get(currentLabel) : labelIndex + "-";
-        		fileName += LABEL_STRINGS.containsKey(currentComparisonLabel) ? LABEL_STRINGS.get(currentComparisonLabel) : comparisonLabelIndex ;
-        		fileName += ".csv";
-        		try {
-        			FileWriter writer = new FileWriter(fileName);
-        			writer.write("Pattern," + currentLabel + "," + currentComparisonLabel + "\n");
-        			final Map<String, Integer> labelMap = featureMap.get(currentLabel);
-        			final Map<String, Integer> comparisonLabelMap = featureMap.get(currentComparisonLabel);
-        			
-        			for (Map.Entry<String, Integer> patternKey: labelMap.entrySet()) {
-        				final String pattern = patternKey.getKey();
-        				if (comparisonLabelMap.containsKey(pattern)){
-        					writer.write(pattern + "," + patternKey.getValue() + "," + comparisonLabelMap.get(pattern) + "\n");
-        				}
-        			}
-        			
-        			writer.flush();
-        			writer.close();
-        		} catch (final Exception e){
-        			e.printStackTrace();
-        		}
-    		}	
-    	}
-    }
 
     /**
      * extract the dependency features.
@@ -254,7 +228,8 @@ public class FeatureExtractor {
      * @param simplifiedSentence
      * @return
      */
-    private SentenceInstance getSentenceInstance(final int questionIndex, final int simpleSentenceIndex, final String simplifiedSentence){
+    private SentenceInstance getSentenceInstance(final int questionIndex, final int simpleSentenceIndex,
+    		final String simplifiedSentence, final String syntacticPattern, final String label){
         final Set<FeatureDependency> dependencies = new HashSet<>();
 
         final StringReader textReader = new StringReader(simplifiedSentence);
@@ -272,9 +247,12 @@ public class FeatureExtractor {
             }
         }
 
-        final SentenceInstance sentenceInstance = new SentenceInstance(questionIndex, simpleSentenceIndex, simplifiedSentence, dependencies);
-
-        return sentenceInstance;
+        return new SentenceInstance(questionIndex,
+        				simpleSentenceIndex, 
+        				simplifiedSentence, 
+        				dependencies, 
+        				syntacticPattern,
+        				label);
     }
 
     /**
@@ -318,7 +296,50 @@ public class FeatureExtractor {
 				.build();
 		return currentFeatureDependency;
 	}
+	
+	private void printFeatures() {
+		try {
+			final File features = new File(TEST_FEATURES_FILE_PATH);
+			final FileWriter fileWriter = new FileWriter(features);
+			int noOfQuestions = 0;
+			int noOfSentences = 0;
+			fileWriter.write(getColumnOrderList());
+			for (final QuestionInstance questionInstance: mQuestionInstances) {
+				noOfQuestions++;
+				for (final SentenceInstance sentenceInstance: questionInstance.getSentenceInstances()){
+					noOfSentences++;
+					final FeatureVector featureVector = new FeatureVector(sentenceInstance, CONSIDER_NGRAM_FEATURES, CONSIDER_WORD_FREQUENCY_FEATURES);
+					fileWriter.write(featureVector.toString());
+				}
+			}
+			fileWriter.flush();
+			fileWriter.close();
+			System.out.println("No of question:"+noOfQuestions);
+			System.out.println("No of sentences:" + noOfSentences);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+	}
     
+	private String getColumnOrderList() {
+		final StringBuilder columnOrder = new StringBuilder();
+		columnOrder.append("Label,");
+		columnOrder.append("IsItAFirstSentence,");
+		columnOrder.append("IsItALastSentence,");
+		columnOrder.append("HasACardinal,");
+		columnOrder.append("HasASubject,");
+		columnOrder.append("HasAnActionVerb,");
+		columnOrder.append("HasADirectObject,");
+		columnOrder.append("HasAWHAdverb,");
+		columnOrder.append("HasAExpletive,");
+		columnOrder.append("HasComparativeAdverb,");
+		columnOrder.append("HasSuperlativeAdverb,");
+		columnOrder.append("HasPastFormVerb,");
+		columnOrder.append("HasBaseFormVerb");
+		columnOrder.append("\n");
+		return columnOrder.toString();
+	}
+	
     /**
      * 
      * @return
@@ -328,7 +349,11 @@ public class FeatureExtractor {
 
 			@Override
 			public int compare(final SentenceInstance o1, final SentenceInstance o2) {
-				return o1.getSentenceIndex() - o2.getSentenceIndex();
+				if (o1.getQuestionIndex() == o2.getQuestionIndex()) {
+					return o1.getSentenceIndex() - o2.getSentenceIndex();
+				} else {
+					return o1.getQuestionIndex() - o2.getQuestionIndex();
+				}
 			}
     		
     	};
