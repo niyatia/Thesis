@@ -23,7 +23,8 @@ public class PublicKeys {
     public static final String TEST_DATA_FILE_PATH = DATASET_DIRECTORY_ESCAPED_PATH + "TestData.json";
     public static final String TRAINING_FEATURES_FILE_PATH = DATASET_DIRECTORY_ESCAPED_PATH + "TrainingFeatures.csv";
     public static final String TEST_FEATURES_FILE_PATH = DATASET_DIRECTORY_ESCAPED_PATH + "TestFeatures.csv";
- 
+    public static final String VERB_FREQUENCY_FILE_PATH = DATASET_DIRECTORY_ESCAPED_PATH + "VerbFrequency.csv";
+    
     /** JSON Keys */
 	public static final String KEY_PARENT_INDEX = "ParentIndex";
     public static final String KEY_S_QUESTION = "sQuestion";

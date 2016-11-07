@@ -1,6 +1,8 @@
 package com.neu.arithmeticproblemsolver.datasetoperations;
 
 import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.ADD_SUB_FILE_PATH;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.TRAINING_DATA_FILE_PATH;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.TEST_DATA_FILE_PATH;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,7 +44,7 @@ public class TestDataExtractor {
 	        	indicesConsidered.add(randomIndex);
 	        	testDataArrayBuilder.add(question);
 	        }
-	        final File testDataFile = new File("TestData.json");
+	        final File testDataFile = new File(TEST_DATA_FILE_PATH);
 	        final FileOutputStream testDataFileWriter = new FileOutputStream(testDataFile);
 	        final JsonWriter testDataJsonWriter = Json.createWriter(testDataFileWriter);
 	        testDataJsonWriter.write(testDataArrayBuilder.build());
@@ -57,7 +59,7 @@ public class TestDataExtractor {
 	        		trainingDataArrayBuilder.add(currentQuestion);
 	        	}	        	
 	        }
-	        final File trainingDataFile = new File("TrainingData.json");
+	        final File trainingDataFile = new File(TRAINING_DATA_FILE_PATH);
 	        final FileOutputStream trainingDataFileWriter = new FileOutputStream(trainingDataFile);
 	        final JsonWriter trainingDataJsonWriter = Json.createWriter(trainingDataFileWriter);
 	        trainingDataJsonWriter.write(trainingDataArrayBuilder.build());

@@ -3150,7 +3150,7 @@
             "SyntacticPattern": "NVCN"
           },
           {
-            "Sentence": "Tom found 4 seashells were broken .",
+            "Sentence": "4 seashells were broken .",
             "label": "-",
             "SyntacticPattern": "NVCNVV"
           }
@@ -3561,7 +3561,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Sam bought 13 of Mike 's baseball cards .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVCPNN"
           }
         ]
@@ -4100,7 +4100,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Alyssa bought 224 of Jason 's Pokemon cards .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVCPNN"
           }
         ]
@@ -4267,7 +4267,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Benny bought 2 of Jason 's Pokemon cards .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVCPNN"
           }
         ]
@@ -4773,7 +4773,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Melanie bought 3 of Fred 's baseball cards .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVCPNN"
           }
         ]
@@ -5183,7 +5183,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Keith bought 22 of Fred 's baseball cards .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVCPNN"
           }
         ]
@@ -5532,7 +5532,7 @@
           },
           {
             "Sentence": "She spent $ 6.59 on marbles .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPN"
           }
         ]
@@ -5565,7 +5565,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Jessica spent $ 10.22 on a cat toy .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDN"
           },
           {
@@ -5613,12 +5613,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Sara spent $ 5.36 on a hotdog .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDN"
           },
           {
             "Sentence": "Sara spent $ 5.10 on a salad .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDN"
           }
         ]
@@ -5661,12 +5661,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "He spent $ 14.28 on shorts jacket .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPN"
           },
           {
             "Sentence": "He spent $ 4.74 on a jacket .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDN"
           }
         ]
@@ -5709,12 +5709,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Alyssa paid $ 12.08 for grapes .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPN"
           },
           {
             "Sentence": "Alyssa paid $ 9.85 for cherries .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPN"
           }
         ]
@@ -5757,17 +5757,17 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Mary paid $ 11.08 for berries .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPN"
           },
           {
             "Sentence": "Mary paid $ 14.33 for apples .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPN"
           },
           {
             "Sentence": "Mary paid $ 9.31 for peaches .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPN"
           }
         ]
@@ -5810,17 +5810,17 @@
         "SimplifiedSentences": [
           {
             "Sentence": "She spent $ 13.99 on shorts .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPN"
           },
           {
             "Sentence": "She spent $ 12.14 on a shirt .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDN"
           },
           {
             "Sentence": "She spent $ 7.43 on a jacket .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDN"
           }
         ]
@@ -7081,7 +7081,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "If they sold 3867 tickets in the first half of the season .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "PNVCNPDANPDN"
           },
           {
@@ -7215,7 +7215,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "This morning her employees used 816 eggs to bake pumpkin pies .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "DNNNVCNPVN"
           }
         ]
@@ -7225,7 +7225,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "If her employees used a total of 1339 eggs today .",
-            "label": "=",
+            "label": "+",
             "SyntacticPattern": "PNNVDNPCNN"
           },
           {
@@ -7354,7 +7354,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "A company painted some houses in Hancock County white and blue using a total of 6689 gallons of paint .",
-            "label": "=",
+            "label": "+",
             "SyntacticPattern": "DNVDNPNAVDNPCNPN"
           }
         ]
@@ -7364,7 +7364,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "If they used 660 gallons of white paint .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "PNVCNPAN"
           },
           {
@@ -7981,12 +7981,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "A tailor cut 0.75 inch off a skirt .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "DANCNPDN"
           },
           {
             "Sentence": "A tailor cut 0.5 inch off a pair of pants .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "DCNPDNPN"
           }
         ]
@@ -8272,12 +8272,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "She used 0.6666666666666666 tablespoon of cinnamon .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCNPN"
           },
           {
             "Sentence": "She used 0.5 tablespoon of nutmeg .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCNPN"
           }
         ]
@@ -8510,12 +8510,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "She used 0.625 cup of flour .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCNPN"
           },
           {
             "Sentence": "She used 0.25 cup of sugar .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCNPN"
           }
         ]
@@ -9189,12 +9189,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "While making desserts for a bake sale Victor used 0.625 scoop of brown sugar .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "PVNPDANNVCNPAN"
           },
           {
             "Sentence": "While making desserts for a bake sale Victor used 0.25 scoop of white sugar .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "PVNPDANNVCNPAN"
           }
         ]
@@ -9394,12 +9394,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "While making pastries a bakery used 0.2 bag of wheat flour .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "DVNDNVCNPNN"
           },
           {
             "Sentence": "While making pastries a bakery used 0.1 bag of white flour .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "DVNDNVCNPNN"
           }
         ]
@@ -9760,17 +9760,17 @@
         "SimplifiedSentences": [
           {
             "Sentence": "She used 0.16666666666666666 pound of peanuts .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCNPN"
           },
           {
             "Sentence": "She used 0.16666666666666666 pound of chocolate chips .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCNPN"
           },
           {
             "Sentence": "She used 0.08333333333333333 pound of raisins .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCNPN"
           }
         ]
@@ -10184,17 +10184,17 @@
         "SimplifiedSentences": [
           {
             "Sentence": "She used 0.25 gallon of grape juice .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCNPN"
           },
           {
             "Sentence": "She used 0.375 gallon of cranberry juice .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCNPN"
           },
           {
             "Sentence": "She used 0.125 gallon of club soda .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCNPN"
           }
         ]
@@ -10338,17 +10338,17 @@
         "SimplifiedSentences": [
           {
             "Sentence": "She used 0.2 cup of strawberries .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCNPN"
           },
           {
             "Sentence": "She used 0.1 cup of yogurt .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCNPN"
           },
           {
             "Sentence": "She used 0.2 cup of orange juice .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCNPAN"
           }
         ]
@@ -10593,12 +10593,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Carefully following a recipe Kenny used exactly 0.16666666666666666 cup of oil .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "VDNNVCNPN"
           },
           {
             "Sentence": "Carefully following a recipe Kenny used exactly 1.1666666666666667 cups of water .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "VDNNVCNPN"
           }
         ]
@@ -10608,7 +10608,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "How many cups of liquid did Kenny use in all ?",
-            "label": "+",
+            "label": "?",
             "SyntacticPattern": "WANPNVNVPD"
           }
         ]
@@ -12384,9 +12384,9 @@
             "SyntacticPattern": "NVCN"
           },
           {
-            "Sentence": "Sally had 9 cards were torn .",
+            "Sentence": "9 cards were torn .",
             "label": "-",
-            "SyntacticPattern": "NVCNVV"
+            "SyntacticPattern": "CNVV"
           }
         ]
       },
@@ -12395,7 +12395,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Sara bought 24 of Sally 's baseball cards .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVCPNN"
           }
         ]
@@ -12768,9 +12768,9 @@
             "SyntacticPattern": "NVCN"
           },
           {
-            "Sentence": "Dan had 8 cards were torn .",
+            "Sentence": "8 cards were torn .",
             "label": "-",
-            "SyntacticPattern": "NVCNVV"
+            "SyntacticPattern": "CNVV"
           }
         ]
       },
@@ -12779,7 +12779,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Sam bought 15 of Dan 's baseball cards .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVCPNN"
           }
         ]
@@ -13056,9 +13056,9 @@
             "SyntacticPattern": "NVCN"
           },
           {
-            "Sentence": "Joan had 6 cards were torn .",
+            "Sentence": "6 cards were torn .",
             "label": "-",
-            "SyntacticPattern": "NVCNVV"
+            "SyntacticPattern": "CNVV"
           }
         ]
       },
@@ -13067,7 +13067,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Sara bought 133 of Joan 's Pokemon cards .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVCPNN"
           }
         ]
@@ -13781,7 +13781,7 @@
             "SyntacticPattern": "NVCN"
           },
           {
-            "Sentence": "Mike found 4 of the seashells were broken .",
+            "Sentence": "4 of the seashells were broken .",
             "label": "-",
             "SyntacticPattern": "NVCPDNVV"
           }
@@ -13830,7 +13830,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Sara bought 18 of Melanie 's baseball cards .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVCPNN"
           }
         ]
@@ -14237,7 +14237,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Dan spent $ 11.76 on a snake toy .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDN"
           },
           {
@@ -14295,12 +14295,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "She spent $ 13.04 on a shirt .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDN"
           },
           {
             "Sentence": "She spent $ 12.27 on a jacket .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDN"
           }
         ]
@@ -14406,7 +14406,7 @@
           },
           {
             "Sentence": "Tom spent $ 9.56 on marbles .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPN"
           }
         ]
@@ -14416,7 +14416,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Tom also spent $ 14.50 on shorts .",
-            "label": "i",
+            "label": "-",
             "SyntacticPattern": "NVCPN"
           }
         ]
@@ -14459,12 +14459,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Mary spent $ 1.08 on soup .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPN"
           },
           {
             "Sentence": "Mary spent $ 4.80 on a salad .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDN"
           }
         ]
@@ -14474,7 +14474,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Mary paid with a 20 dollar bill .",
-            "label": "i",
+            "label": "+",
             "SyntacticPattern": "NVPDCN"
           }
         ]
@@ -14608,12 +14608,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Joan spent $ 15 on shorts .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPN"
           },
           {
             "Sentence": "Joan spent $ 12.51 on a shirt .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDN"
           }
         ]
@@ -14825,17 +14825,17 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Keith spent $ 136.01 on speakers .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPN"
           },
           {
             "Sentence": "Keith spent $ 139.38 on a CD player .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDN"
           },
           {
             "Sentence": "Keith spent $ 112.46 on new tires .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPAN"
           }
         ]
@@ -14903,7 +14903,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "She spent $ 14.55 on pants .",
-            "label": "i",
+            "label": "-",
             "SyntacticPattern": "NVCPN"
           }
         ]
@@ -14936,7 +14936,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Mary paid 6 dollars for the pie .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDN"
           },
           {
@@ -14945,9 +14945,9 @@
             "SyntacticPattern": "NVCN"
           },
           {
-            "Sentence": "After paying 6 dollars for the pie her friend has 43 dollars .",
+            "Sentence": "her friend has 43 dollars .",
             "label": "i",
-            "SyntacticPattern": "PVCNPDNNNVCN"
+            "SyntacticPattern": "NNVCN"
           }
         ]
       },
@@ -16107,7 +16107,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Sally had 8 pennies in her bank .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVCNPNN"
           },
           {
@@ -16488,7 +16488,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Tom had 27 pennies in his bank .",
-            "label": "i",
+            "label": "+",
             "SyntacticPattern": "NVCNPNN"
           },
           {
@@ -16508,7 +16508,7 @@
           },
           {
             "Sentence": "His dad gave him 49 nickels .",
-            "label": "i",
+            "label": "+",
             "SyntacticPattern": "NNVNCN"
           }
         ]
@@ -19076,10 +19076,10 @@
         ]
       },
       {
-        "Sentence": "After the sale she had 24 home to take back home .",
+        "Sentence": "After the sale she had 24 pastries to take back home .",
         "SimplifiedSentences": [
           {
-            "Sentence": "After the sale she had 24 home to take back home .",
+            "Sentence": "After the sale she had 24 pastries to take back home .",
             "label": "-",
             "SyntacticPattern": "PDNNVCNPVN"
           }
@@ -19558,10 +19558,10 @@
         ]
       },
       {
-        "Sentence": "After the sale she had 8 home to take back home .",
+        "Sentence": "After the sale she had 8 pastries to take back home .",
         "SimplifiedSentences": [
           {
-            "Sentence": "After the sale she had 8 home to take back home .",
+            "Sentence": "After the sale she had 8 pastries to take back home .",
             "label": "-",
             "SyntacticPattern": "PDNNVCNPVN"
           }
@@ -20151,10 +20151,10 @@
         ]
       },
       {
-        "Sentence": "After the sale she had 4 home to take back home .",
+        "Sentence": "After the sale she had 4 pastries to take back home .",
         "SimplifiedSentences": [
           {
-            "Sentence": "After the sale she had 4 home to take back home .",
+            "Sentence": "After the sale she had 4 pastries to take back home .",
             "label": "-",
             "SyntacticPattern": "PDNNVCNPVN"
           }
@@ -22170,10 +22170,10 @@
         ]
       },
       {
-        "Sentence": "After the sale she had 12 home to take back home .",
+        "Sentence": "After the sale she had 12 pastries to take back home .",
         "SimplifiedSentences": [
           {
-            "Sentence": "After the sale she had 12 home to take back home .",
+            "Sentence": "After the sale she had 12 pastries to take back home .",
             "label": "-",
             "SyntacticPattern": "PDNNVCNPVN"
           }
@@ -22226,7 +22226,7 @@
         "Sentence": "If 16 of the books were used , how many new books did he buy ?",
         "SimplifiedSentences": [
           {
-            "Sentence": "If 16 of the books were used how many new books did he buy ? .",
+            "Sentence": "If 16 of the books were used .",
             "label": "-",
             "SyntacticPattern": "PCPDNVV"
           },
@@ -24027,7 +24027,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "If she sold 16 of roses .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "PNVCPN"
           },
           {
@@ -31568,7 +31568,7 @@
           },
           {
             "Sentence": "Joan lost 2 of orange balloons .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPAN"
           }
         ]
@@ -31907,7 +31907,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Sam bought 13 of Mike 's baseball cards .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVCPNN"
           }
         ]
@@ -32532,7 +32532,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Alyssa bought 224 of Jason 's Pokemon cards .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVCPNN"
           }
         ]
@@ -32699,7 +32699,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Benny bought 2 of Jason 's Pokemon cards .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVCPNN"
           }
         ]
@@ -33205,7 +33205,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Melanie bought 3 of Fred 's baseball cards .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVCPNN"
           }
         ]
@@ -33538,7 +33538,7 @@
             "SyntacticPattern": "NVCN"
           },
           {
-            "Sentence": "Dan found 3 seashells were broken .",
+            "Sentence": "3 seashells were broken .",
             "label": "-",
             "SyntacticPattern": "NVCNVV"
           }
@@ -33739,7 +33739,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Keith bought 22 of Fred 's baseball cards .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVCPNN"
           }
         ]
@@ -33987,12 +33987,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Joan purchased a basketball game for $ 5.20 .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVDNPC"
           },
           {
             "Sentence": "Joan purchased a racing game for $ 4.23 .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVDNPC"
           }
         ]
@@ -34035,12 +34035,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "He bought a trumpet for $ 145.16 .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVDNPC"
           },
           {
             "Sentence": "He bought a song book which was $ 5.84 .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVDNVC"
           }
         ]
@@ -34462,17 +34462,17 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Tom purchased a football game for $ 14.02 .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVDNPC"
           },
           {
             "Sentence": "Tom purchased a strategy game for $ 9.46 .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVDNPC"
           },
           {
             "Sentence": "Tom purchased a Batman game for $ 12.04 .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVDNPC"
           }
         ]
@@ -34515,12 +34515,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "He bought marbles for $ 9.05 .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVNPC"
           },
           {
             "Sentence": "He bought a football for $ 4.95 .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVDNPC"
           },
           {
@@ -34717,7 +34717,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "She bought a football for $ 9.14 .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVDNPC"
           },
           {
@@ -35975,17 +35975,17 @@
         "SimplifiedSentences": [
           {
             "Sentence": "She bought a sweater for $ 24 .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVDNPC"
           },
           {
             "Sentence": "She bought a T-shirt for $ 6 .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVDNPC"
           },
           {
             "Sentence": "She bought a pair of shoes for $ 11 .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVDNPNPC"
           }
         ]
@@ -37041,12 +37041,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Each day one dog eats 0.125 of a scoop of of food scoop .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "DNCNVCPDNPPN"
           },
           {
             "Sentence": "the other dog eats 0.125 of a scoop scoop .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "DANVCPDN"
           }
         ]
@@ -37370,12 +37370,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "She used 0.625 of a cup of flour .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDNPN"
           },
           {
             "Sentence": "She used 0.25 of a cup of sugar .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDNPN"
           }
         ]
@@ -37408,12 +37408,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Each day the polar bear at Richmond Richmond zoo eats 0.2 of a bucket of trout .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "DNDANPNVCPDNPN"
           },
           {
             "Sentence": "Each day the polar bear at Richmond Richmond zoo eats 0.4 of a bucket of salmon .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "DNDANPNVCPDNPN"
           }
         ]
@@ -38044,12 +38044,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "While making desserts for a bake sale Victor used 0.625 scoop of brown sugar .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "PVNPDANNVCNPAN"
           },
           {
             "Sentence": "While making desserts for a bake sale Victor used 0.25 scoop of white sugar .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "PVNPDANNVCNPAN"
           }
         ]
@@ -38249,12 +38249,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "While making pastries a bakery used 0.2 bag of wheat flour .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "DVNDNVCNPNN"
           },
           {
             "Sentence": "While making pastries a bakery used 0.1 bag of white flour .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "DVNDNVCNPNN"
           }
         ]
@@ -38615,17 +38615,17 @@
         "SimplifiedSentences": [
           {
             "Sentence": "She used 0.16666666666666666 of a pound of peanuts .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDNPN"
           },
           {
             "Sentence": "She used 0.16666666666666666 of a pound of chocolate chips .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDNPN"
           },
           {
             "Sentence": "She used 0.08333333333333333 of a pound of raisins .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDNPN"
           }
         ]
@@ -39039,17 +39039,17 @@
         "SimplifiedSentences": [
           {
             "Sentence": "She used 0.25 of a gallon of grape juice .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDNPN"
           },
           {
             "Sentence": "She used 0.375 of a gallon of cranberry juice .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDNPN"
           },
           {
             "Sentence": "She used 0.125 of a gallon of club soda .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCPDNPN"
           }
         ]
@@ -39448,12 +39448,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Carefully following a recipe Kenny used exactly 0.16666666666666666 cup of oil .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "VDNNVCNPN"
           },
           {
             "Sentence": "Carefully following a recipe Kenny used exactly 1.1666666666666667 cups of water .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "VDNNVCNPN"
           }
         ]
@@ -39605,12 +39605,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Roadster 's Paving Company used 10 tons of cement to pave Lexi 's street .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NNVCNPNPVNN"
           },
           {
             "Sentence": "Roadster 's Paving Company used 5.1 tons of cement to pave Tess 's street .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NNVCNPNPVNN"
           }
         ]
@@ -41932,7 +41932,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "At the game Tony bought a hot dog for $ 3 .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "PDNVDANPC"
           }
         ]
@@ -50839,7 +50839,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "She bought a pencil for 11 cents .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVDNPCN"
           }
         ]
@@ -51502,12 +51502,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Last Saturday Marie sold 425 magazines .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "ANNVCN"
           },
           {
             "Sentence": "Last Saturday Marie sold 275 newspapers .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "ANNVCN"
           }
         ]
@@ -51732,7 +51732,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Bobby ate 26 pieces of candy .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCNPN"
           }
         ]
@@ -51742,7 +51742,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "Then he ate 17 more pieces of candy .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCANPN"
           }
         ]
@@ -52019,12 +52019,12 @@
         "SimplifiedSentences": [
           {
             "Sentence": "James ate 22 carrot sticks before dinner .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCNPN"
           },
           {
             "Sentence": "James ate 15 carrot sticks more after dinner .",
-            "label": "+",
+            "label": "-",
             "SyntacticPattern": "NVCNPN"
           }
         ]
@@ -55427,7 +55427,7 @@
         "SimplifiedSentences": [
           {
             "Sentence": "He bought a candy bar for $ 1.00 .",
-            "label": "-",
+            "label": "+",
             "SyntacticPattern": "NVDNPC"
           }
         ]
