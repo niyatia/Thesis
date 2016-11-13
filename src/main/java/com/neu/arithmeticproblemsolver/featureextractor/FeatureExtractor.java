@@ -16,7 +16,11 @@ import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.SUBTRA
 import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.QUESTION_LABEL;
 import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.EQUALS_LABEL;
 import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.IRRELEVANT_LABEL;
-import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.VERB_FREQUENCY_FILE_PATH;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.VERB_FREQUENCY_TRAINING_FILE_PATH;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.VERB_FEATURES_TRAINING_FILE_PATH;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.VERB_FREQUENCY_TEST_FILE_PATH;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.VERB_FEATURES_TEST_FILE_PATH;
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -89,14 +93,14 @@ public class FeatureExtractor {
      */
     public void extractFeatures(){
         try {
-            final InputStream inputFileStream = new FileInputStream(TRAINING_DATA_FILE_PATH);
+            final InputStream inputFileStream = new FileInputStream(TEST_DATA_FILE_PATH);
             final JsonReader jsonReader = Json.createReader(inputFileStream);
             final JsonArray fileArray = jsonReader.readArray();
             final Map<String, Map<String, Integer>> labelToPatternFrequencies = new HashMap<>();
             System.out.println("No of questions:" + fileArray.size());
             int noOfSentencesCount = 0;
             for (int questionCounter = 0; questionCounter < fileArray.size(); questionCounter++) {
-            	
+            	System.out.println("Question:" + questionCounter);
                 final JsonObject questionObject = fileArray.getJsonObject(questionCounter);
                 final int questionIndex = questionObject.getInt(KEY_PARENT_INDEX);
                 final JsonArray sentences = questionObject.getJsonArray(KEY_SENTENCES);
@@ -126,7 +130,6 @@ public class FeatureExtractor {
                         
                         if (CONSIDER_WORD_FREQUENCY_FEATURES) {
                         	getWordFrequency(sentenceInstance, label);
-                        	//printImproperQuestions(questionIndex, sentenceInstance, label);
                         }
                         
                         if (CONSIDER_NGRAM_FEATURES) {
@@ -269,62 +272,94 @@ public class FeatureExtractor {
      */
     private void getWordFrequency(final SentenceInstance sentenceInstance, final String label){
         
-    	final String requiredVerb = "spent";
-    	final String expectedLabel = "-";
+    	final Set<FeatureDependency> dependencies = sentenceInstance.getFeatureDependencies();
+    	final Set<Integer> uniqueVerbIndices = new HashSet<>();
     	
-        final Set<FeatureDependency> dependencies = sentenceInstance.getFeatureDependencies();
-        final Set<Integer> uniqueVerbIndices = new HashSet<>();
-        for (final FeatureDependency featureDependency: dependencies) {
-        	if (!uniqueVerbIndices.contains(featureDependency.getGovIndex())
-        			&& !Verb.valueOfNullable(featureDependency.getGovTag()).equals(Verb.NONE)) {
-        		
-        			uniqueVerbIndices.add(featureDependency.getGovIndex());
-        			final String word = featureDependency.getGovWord();
-        			if (!mLabelWordFrequency.containsKey(word)) {
+    	if (sentenceInstance.isHasACardinal()) {
+    		int cardinalIndex = -1;
+    		for (final FeatureDependency featureDependency: dependencies) {			
+    			if (featureDependency.getDepTag().equals("CD")) {
+    				cardinalIndex = featureDependency.getDepIndex();
+    				break;
+    			} else if (featureDependency.getGovTag().equals("CD")) {
+    				cardinalIndex = featureDependency.getGovIndex();
+    				break;
+    			} 			
+    		}
+    		
+    		if (cardinalIndex == -1) {
+    			System.err.println("Cardinal index must be found");
+    		}
+    		
+    		for (final FeatureDependency featureDependency: dependencies) {
+    			if (!uniqueVerbIndices.contains(featureDependency.getDepIndex())
+            			&& !Verb.valueOfNullable(featureDependency.getDepTag()).equals(Verb.NONE)
+            			&& featureDependency.getDepIndex() < cardinalIndex) {
+    				uniqueVerbIndices.add(featureDependency.getDepIndex());
+    				final String verb = featureDependency.getDepWord();
+        			if (!mLabelWordFrequency.containsKey(verb)) {
         				final Map<String, Integer> labelMap = new HashMap<>();
         				labelMap.put(ADDITION_LABEL, 0);
         				labelMap.put(SUBTRACTION_LABEL, 0);
         				labelMap.put(QUESTION_LABEL, 0);
         				labelMap.put(EQUALS_LABEL, 0);
         				labelMap.put(IRRELEVANT_LABEL, 0);
-        				mLabelWordFrequency.put(word, labelMap);        				
+        				mLabelWordFrequency.put(verb, labelMap); 
         			}
-        			final Map<String, Integer> labelMap = mLabelWordFrequency.get(word);
+        			final Map<String, Integer> labelMap = mLabelWordFrequency.get(verb);        			
+        			if(labelMap.containsKey(label)){
+                    	labelMap.put(label, labelMap.get(label) + 1);
+                    } else {
+                    	labelMap.put(label, 1);
+                    }
+    			}
+    			
+    			if (!uniqueVerbIndices.contains(featureDependency.getGovIndex())
+            			&& !Verb.valueOfNullable(featureDependency.getGovTag()).equals(Verb.NONE)
+            			&& featureDependency.getGovIndex() < cardinalIndex) {
+    				uniqueVerbIndices.add(featureDependency.getGovIndex());
+    				final String verb = featureDependency.getGovWord();
+        			if (!mLabelWordFrequency.containsKey(verb)) {
+        				final Map<String, Integer> labelMap = new HashMap<>();
+        				labelMap.put(ADDITION_LABEL, 0);
+        				labelMap.put(SUBTRACTION_LABEL, 0);
+        				labelMap.put(QUESTION_LABEL, 0);
+        				labelMap.put(EQUALS_LABEL, 0);
+        				labelMap.put(IRRELEVANT_LABEL, 0);
+        				mLabelWordFrequency.put(verb, labelMap); 
+        			}
+        			final Map<String, Integer> labelMap = mLabelWordFrequency.get(verb);        			
+        			if(labelMap.containsKey(label)){
+                    	labelMap.put(label, labelMap.get(label) + 1);
+                    } else {
+                    	labelMap.put(label, 1);
+                    }
+    			}
+    		}
+    	}
+    	
+    	
+    	/**
+    	 * To find Improper labeled Questions.
+    	 */
+    	/*final String requiredVerb = "spent";
+    	final String expectedLabel = "-";*/
+    	
+       
         			
-        			if(labelMap.containsKey(label)){
-                    	labelMap.put(label, labelMap.get(label) + 1);
-                    } else {
-                    	labelMap.put(label, 1);
-                    }
-        			if (word.equals(requiredVerb) && !label.equals(expectedLabel)) {
-        				System.out.println("Improper Question Index:" + sentenceInstance.getQuestionIndex() + " Label:" + label);
-        			}
-        	}
-        	
-        	if (!uniqueVerbIndices.contains(featureDependency.getDepIndex())
-        			&& !Verb.valueOfNullable(featureDependency.getDepTag()).equals(Verb.NONE)) {        		
-        			uniqueVerbIndices.add(featureDependency.getDepIndex());
-        			final String word = featureDependency.getDepWord();
-        			if (!mLabelWordFrequency.containsKey(word)) {
-        				final Map<String, Integer> labelMap = new HashMap<>();
-        				labelMap.put(ADDITION_LABEL, 0);
-        				labelMap.put(SUBTRACTION_LABEL, 0);
-        				labelMap.put(QUESTION_LABEL, 0);
-        				labelMap.put(EQUALS_LABEL, 0);
-        				labelMap.put(IRRELEVANT_LABEL, 0);
-        				mLabelWordFrequency.put(word, labelMap); 
-        			}
-        			final Map<String, Integer> labelMap = mLabelWordFrequency.get(word);        			
-        			if(labelMap.containsKey(label)){
-                    	labelMap.put(label, labelMap.get(label) + 1);
-                    } else {
-                    	labelMap.put(label, 1);
-                    }
-        			if (word.equals(requiredVerb) && !label.equals(expectedLabel)) {
-        				System.out.println("Improper Question Index:" + sentenceInstance.getQuestionIndex() + " Label:" + label);
-        			}
-        	}
-        }
+		/**
+    	 * To find Improper labeled Questions.
+    	 */
+		/*if (word.equals(requiredVerb) && !label.equals(expectedLabel)) {
+			System.out.println("Improper Question Index:" + sentenceInstance.getQuestionIndex() + " Label:" + label);
+		}*/
+
+		/**
+    	 * To find Improper labeled Questions.
+    	 */
+		/* if (word.equals(requiredVerb) && !label.equals(expectedLabel)) {
+			System.out.println("Improper Question Index:" + sentenceInstance.getQuestionIndex() + " Label:" + label);
+		}*/
     }
 
     /**
@@ -355,7 +390,7 @@ public class FeatureExtractor {
 	
 	private void printFeatures() {
 		try {
-			final File features = new File(TRAINING_FEATURES_FILE_PATH);
+			final File features = new File(TEST_FEATURES_FILE_PATH);
 			final FileWriter fileWriter = new FileWriter(features);
 			int noOfQuestions = 0;
 			int noOfSentences = 0;
@@ -379,8 +414,8 @@ public class FeatureExtractor {
 	
 	public void printVerbFrequencies() {
 		try {
-			final File verbFrequency = new File(VERB_FREQUENCY_FILE_PATH);
-			final FileWriter fileWriter = new FileWriter(verbFrequency);
+			final File verbFrequency = new File(VERB_FREQUENCY_TEST_FILE_PATH);
+			final FileWriter frequencyFileWriter = new FileWriter(verbFrequency);
 			final StringBuilder sb = new StringBuilder();
 			sb.append("Verb,");
 			sb.append(ADDITION_LABEL + ",");
@@ -388,24 +423,86 @@ public class FeatureExtractor {
 			sb.append(QUESTION_LABEL + ",");
 			sb.append(EQUALS_LABEL + ",");
 			sb.append(IRRELEVANT_LABEL + "\n");
-			fileWriter.write(sb.toString());
+			frequencyFileWriter.write(sb.toString());
+			
+			final File verbFeatures = new File(VERB_FEATURES_TEST_FILE_PATH);
+			final FileWriter featuresFileWriter = new FileWriter(verbFeatures);
+			final StringBuilder featuresStringBuilder = new StringBuilder();
+			featuresStringBuilder.append("Label,");
+			featuresStringBuilder.append("Addition Frequency" + ",");
+			featuresStringBuilder.append("Subtraction Frequency" + ",");
+			featuresStringBuilder.append("Question Frequency" + ",");
+			featuresStringBuilder.append("Equals Frequency" + ",");
+			featuresStringBuilder.append("Irrelevant Frequency" + "\n");
+			featuresFileWriter.write(featuresStringBuilder.toString());
+			
 			for (final Entry<String, Map<String, Integer>> verbEntry: mLabelWordFrequency.entrySet()){
 				final String verb = verbEntry.getKey();
 				final Map<String, Integer> labelMap = verbEntry.getValue();
-				final StringBuilder verbString = new StringBuilder(verb + ",");
-				verbString.append(labelMap.get(ADDITION_LABEL) + ",");
-				verbString.append(labelMap.get(SUBTRACTION_LABEL) + ",");
-				verbString.append(labelMap.get(QUESTION_LABEL) + ",");
-				verbString.append(labelMap.get(EQUALS_LABEL) + ",");
-				verbString.append(labelMap.get(IRRELEVANT_LABEL) + "\n");
-				fileWriter.write(verbString.toString());
+				final StringBuilder verbFrequencyString = new StringBuilder(verb + ",");
+				
+				final int additionCount = labelMap.get(ADDITION_LABEL);
+				final int subtractionCount = labelMap.get(SUBTRACTION_LABEL);
+				final int questionCount = labelMap.get(QUESTION_LABEL);
+				final int equalsCount = labelMap.get(EQUALS_LABEL);
+				final int irrelevantCount = labelMap.get(IRRELEVANT_LABEL);
+				
+				verbFrequencyString.append(additionCount + ",");
+				verbFrequencyString.append(subtractionCount + ",");
+				verbFrequencyString.append(questionCount + ",");
+				verbFrequencyString.append(equalsCount + ",");
+				verbFrequencyString.append(irrelevantCount + "\n");
+				frequencyFileWriter.write(verbFrequencyString.toString());
+				
+				final float totalVerbCount = additionCount + subtractionCount + questionCount + equalsCount + irrelevantCount;
+				final StringBuilder verbFeaturesBuilder = new StringBuilder();
+				verbFeaturesBuilder.append(getMaxLabel(labelMap) + ",");
+				verbFeaturesBuilder.append(additionCount/totalVerbCount + ",");
+				verbFeaturesBuilder.append(subtractionCount/totalVerbCount + ",");
+				verbFeaturesBuilder.append(questionCount/totalVerbCount + ",");
+				verbFeaturesBuilder.append(equalsCount/totalVerbCount + ",");
+				verbFeaturesBuilder.append(irrelevantCount/totalVerbCount + "\n");
+				featuresFileWriter.write(verbFeaturesBuilder.toString());
 			}
-			fileWriter.flush();
-			fileWriter.close();
+			featuresFileWriter.flush();
+			featuresFileWriter.close();
+			
+			frequencyFileWriter.flush();
+			frequencyFileWriter.close();
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
+	private String getMaxLabel(final Map<String, Integer> labelMap){
+		final int additionCount = labelMap.get(ADDITION_LABEL);
+		final int subtractionCount = labelMap.get(SUBTRACTION_LABEL);
+		final int questionCount = labelMap.get(QUESTION_LABEL);
+		final int equalsCount = labelMap.get(EQUALS_LABEL);
+		final int irrelevantCount = labelMap.get(IRRELEVANT_LABEL);
+		
+		int maxCount = additionCount;
+		String maxLabel = ADDITION_LABEL;
+		
+		if (subtractionCount > maxCount){
+			maxCount = subtractionCount;
+			maxLabel = SUBTRACTION_LABEL;
+		}
+		if (questionCount > maxCount){
+			maxCount = questionCount;
+			maxLabel = QUESTION_LABEL;
+		}
+		if (equalsCount > maxCount){
+			maxCount = equalsCount;
+			maxLabel = EQUALS_LABEL;
+		}
+		if (irrelevantCount > maxCount){
+			maxCount = irrelevantCount;
+			maxLabel = IRRELEVANT_LABEL;
+		}
+		return maxLabel;
+	}
+	
     
 	private String getColumnOrderList() {
 		final StringBuilder columnOrder = new StringBuilder();
@@ -457,25 +554,5 @@ public class FeatureExtractor {
 			}
     		
     	};
-    }
-    
-    private enum Verb {
-    	VB,     /** Verb, base form */
-        VBD,    /** Verb, past tense */
-        VBG,    /** Verb, gerund or present participle */
-        VBN,    /** Verb, past participle */
-        VBP,    /** Verb, non-3rd person singular present */
-        VBZ,    /** Verb, 3rd person singular present */
-        NONE;
-        
-        public static Verb valueOfNullable(final String str) {
-        	Verb toReturn;
-    		try {
-    			toReturn = Verb.valueOf(str);
-    		} catch (final Exception e) {
-    			toReturn = Verb.NONE;
-    		}
-    		return toReturn;
-    	}
     }
 }

@@ -1,8 +1,18 @@
 package com.neu.arithmeticproblemsolver.featureextractor;
 
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.ADDITION_LABEL;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.EQUALS_LABEL;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.IRRELEVANT_LABEL;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.QUESTION_LABEL;
+import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.SUBTRACTION_LABEL;
+
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+
+import com.neu.arithmeticproblemsolver.ws4j.VerbSimilarity;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -27,6 +37,8 @@ public class SentenceInstance {
 	private boolean mHasSuperlativeAdverb;
 	private boolean mHasPastFormVerb;
 	private boolean mHasBaseFormVerb;
+	/** 1=addition, 0=subtraction */
+	private double mVerbClass;
 
 	private final int mQuestionIndex;
 	private final String mSentenceText;
@@ -67,6 +79,7 @@ public class SentenceInstance {
 		mHasSuperlativeAdverb = hasAPartsOfSpeechAndRelations(true, "RBS");
 		mHasPastFormVerb = hasAPartsOfSpeechAndRelations(true, "VBD");
 		mHasBaseFormVerb = hasAPartsOfSpeechAndRelations(true, "VB");
+		mVerbClass = getVerbClassBasedOnSimilarity();
 	}
 	
 	private boolean hasAPartsOfSpeechAndRelations(final boolean allTagsAreMust, final String... requiredTagsAndRelations) {
@@ -92,6 +105,53 @@ public class SentenceInstance {
 				
 		return ((allTagsAreMust && foundTagsAndRelations.size() == tagsAndRelations.size()) ||
 				(!allTagsAreMust && foundTagsAndRelations.size() > 0));
+	}
+	
+	private double getVerbClassBasedOnSimilarity() {
+		double verbClass = -1.0;
+		if (isHasACardinal()) {
+    		int cardinalIndex = -1;
+    		for (final FeatureDependency featureDependency: mFeatureDependencies) {			
+    			if (featureDependency.getDepTag().equals("CD")) {
+    				cardinalIndex = featureDependency.getDepIndex();
+    				break;
+    			} else if (featureDependency.getGovTag().equals("CD")) {
+    				cardinalIndex = featureDependency.getGovIndex();
+    				break;
+    			} 			
+    		}
+    		
+    		final Set<Integer> uniqueVerbIndices = new HashSet<>();
+    		double depVerbClass = -1.0;
+			double govVerbClass = -1.0;
+    		for (final FeatureDependency featureDependency: mFeatureDependencies) {    			
+    			if (!uniqueVerbIndices.contains(featureDependency.getDepIndex())
+            			&& !Verb.valueOfNullable(featureDependency.getDepTag()).equals(Verb.NONE)
+            			&& featureDependency.getDepIndex() < cardinalIndex) {
+    				uniqueVerbIndices.add(featureDependency.getDepIndex());
+    				final String verb = featureDependency.getDepWord();
+        			depVerbClass = VerbSimilarity.getVerbClass(verb);
+    			}
+    			
+    			if (!uniqueVerbIndices.contains(featureDependency.getGovIndex())
+            			&& !Verb.valueOfNullable(featureDependency.getGovTag()).equals(Verb.NONE)
+            			&& featureDependency.getGovIndex() < cardinalIndex) {
+    				uniqueVerbIndices.add(featureDependency.getGovIndex());
+    				final String verb = featureDependency.getGovWord();
+        			govVerbClass = VerbSimilarity.getVerbClass(verb);
+    			}
+    		}
+    		
+    		if (depVerbClass == -1) {
+    			verbClass = govVerbClass;
+    		} else if (govVerbClass == -1) {
+    			verbClass = depVerbClass;
+    		} else {
+    			verbClass = depVerbClass == 0.0 ? depVerbClass : govVerbClass; 
+    		}
+		}
+		
+		return verbClass;
 	}
 	
 	@Override

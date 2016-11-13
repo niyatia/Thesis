@@ -24,7 +24,8 @@ public class FeatureVector {
 	private final boolean mHasSuperlativeAdverb;
 	private final boolean mHasPastFormVerb;
 	private final boolean mHasBaseFormVerb;
-	
+	private final double mVerbClass;
+
 	private final List<Double> mFeatureVector;
 
 	private final SentenceInstance mSentenceInstance;
@@ -48,6 +49,7 @@ public class FeatureVector {
 		mHasSuperlativeAdverb = mSentenceInstance.isHasSuperlativeAdverb();
 		mHasPastFormVerb = mSentenceInstance.isHasPastFormVerb();
 		mHasBaseFormVerb = mSentenceInstance.isHasBaseFormVerb();
+		mVerbClass = mSentenceInstance.getVerbClass();
 
 		mFeatureVector = prepareFeatureVector();
 	}
@@ -85,7 +87,7 @@ public class FeatureVector {
 		featureVector.add(mHasSuperlativeAdverb ? 1.0 : 0.0);
 		featureVector.add(mHasPastFormVerb ? 1.0 : 0.0);
 		featureVector.add(mHasBaseFormVerb ? 1.0 : 0.0);
-		
+		featureVector.add(mVerbClass);
 		
 		if (mConsiderNGramFeatures) {
 			final List<RankedNGram> nGrams = FeaturesUtilities.getTopNGrams();
