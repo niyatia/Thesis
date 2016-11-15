@@ -1,0 +1,47 @@
+***************
+*** 14,22 ****
+  
+  public class HirstStOnge extends RelatednessCalculator {
+  
+- 	protected static double min = 0;
+- 	protected static double max = 16;
+- 
+  	@SuppressWarnings("serial")
+  	private static List<POS[]> posPairs = new ArrayList<POS[]>(){{
+  		add(new POS[]{POS.n,POS.n});
+--- 14,19 ----
+  
+  public class HirstStOnge extends RelatednessCalculator {
+  
+  	@SuppressWarnings("serial")
+  	private static List<POS[]> posPairs = new ArrayList<POS[]>(){{
+  		add(new POS[]{POS.n,POS.n});
+***************
+*** 26,32 ****
+  	}};
+  	
+  	public HirstStOnge(ILexicalDatabase db) {
+- 		super(db);
+  	}
+  
+  	@Override
+--- 23,29 ----
+  	}};
+  	
+  	public HirstStOnge(ILexicalDatabase db) {
++ 		super(db, 0, 16);
+  	}
+  
+  	@Override
+***************
+*** 168,171 ****
+  			return ret;
+  		}
+  	}
+  }
+--- 165,169 ----
+  			return ret;
+  		}
+  	}
++ 
+  }

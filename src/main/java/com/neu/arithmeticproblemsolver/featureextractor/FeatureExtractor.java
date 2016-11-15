@@ -45,9 +45,11 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 
 import com.neu.arithmeticproblemsolver.ngramranker.RankerFeatures;
+import com.neu.arithmeticproblemsolver.ws4j.VerbSimilarity;
 
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.TaggedWord;
+import edu.stanford.nlp.ling.WordLemmaTag;
 import edu.stanford.nlp.parser.nndep.DependencyParser;
 import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
@@ -91,7 +93,7 @@ public class FeatureExtractor {
     /**
      * Extracts features from the dataset.
      */
-    public void extractFeatures(){
+    public void extractFeatures() {
         try {
             final InputStream inputFileStream = new FileInputStream(TEST_DATA_FILE_PATH);
             final JsonReader jsonReader = Json.createReader(inputFileStream);
@@ -153,7 +155,7 @@ public class FeatureExtractor {
             if (CONSIDER_NGRAM_FEATURES) {
             	getRankedNGrams(labelToPatternFrequencies);
             }
-            printVerbFrequencies();
+            //printVerbFrequencies();
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -249,6 +251,7 @@ public class FeatureExtractor {
 
         for (final List<HasWord> sentenceWordList : textProcessor) {
             final List<TaggedWord> taggedWords = MAXENT_TAGGER.tagSentence(sentenceWordList);
+            
             final GrammaticalStructure grammaticalStructure = DEPENDENCY_PARSER.predict(taggedWords);
             final Collection<TypedDependency> sentenceDependencies = grammaticalStructure.typedDependenciesCCprocessed();
 
@@ -518,7 +521,17 @@ public class FeatureExtractor {
 		columnOrder.append("HasComparativeAdverb,");
 		columnOrder.append("HasSuperlativeAdverb,");
 		columnOrder.append("HasPastFormVerb,");
-		columnOrder.append("HasBaseFormVerb");
+		columnOrder.append("HasBaseFormVerb,");
+		
+		for (String positiveVerb : VerbSimilarity.POSITIVE_VERBS) {
+			columnOrder.append(positiveVerb + ",");
+		}
+		
+		for (String negativeVerb : VerbSimilarity.NEGATIVE_VERBS) {
+			columnOrder.append(negativeVerb + ",");
+		}
+		
+		columnOrder.deleteCharAt(columnOrder.lastIndexOf(","));
 		columnOrder.append("\n");
 		return columnOrder.toString();
 	}

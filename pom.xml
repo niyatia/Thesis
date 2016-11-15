@@ -71,14 +71,22 @@
 	    <scope>system</scope> 
 	    <systemPath>${basedir}/lib/jawjaw-1.0.0.jar</systemPath>
   	</dependency>
-	
-	<dependency>
+  	
+  	<dependency>
 		<groupId>edu.cmu.lti</groupId>
 	    <artifactId>ws4j</artifactId>
-	    <version>1.0.0</version>
+	    <version>1.0.1</version>
 	    <scope>system</scope> 
 	    <systemPath>${basedir}/lib/ws4j-1.0.1.jar</systemPath>
 	</dependency>
+	
+	<!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
+	<dependency>
+	    <groupId>com.google.protobuf</groupId>
+	    <artifactId>protobuf-java</artifactId>
+	    <version>3.1.0</version>
+	</dependency>
+	
 </dependencies>
 
 </project>

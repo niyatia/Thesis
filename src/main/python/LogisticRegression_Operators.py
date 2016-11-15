@@ -3,6 +3,7 @@ import numpy as np
 from sklearn import linear_model
 from sklearn.metrics import confusion_matrix
 from numpy import dtype
+from imblearn.over_sampling import RandomOverSampler
 
 class LogisticRegression_Operators:
     
@@ -19,11 +20,11 @@ class LogisticRegression_Operators:
         
         self.m_color_map = color_map
         self.m_label_key = "Label"
-        self.m_logreg = linear_model.LogisticRegression(C=1)
+        self.m_logreg = linear_model.LogisticRegression(C=1e5)
     
     def train(self):
         n_training_samples = 3787
-        n_training_features = 1
+        n_training_features = 13
         training_data = np.empty((n_training_samples, n_training_features))
         training_labels = np.empty((n_training_samples, 1), dtype=np.int)
         
@@ -32,13 +33,15 @@ class LogisticRegression_Operators:
             for index, ir in enumerate(training_features_file):
                 training_labels[index] = np.asarray(self.m_color_map.get(ir.pop(self.m_label_key)), dtype=np.int)
                 training_data[index] = np.asarray(ir.values(), dtype=np.float64)
-                
-        self.m_logreg.fit(training_data, training_labels)
+        
+        cc = RandomOverSampler()
+        training_data_resampled, training_labels_resampled = cc.fit_sample(training_data, training_labels)
+        self.m_logreg.fit(training_data_resampled, training_labels_resampled)
         
     def test(self):
         n_test_samples = 749
         self.n_test_samples = n_test_samples
-        n_test_features = 1
+        n_test_features = 13
         test_data = np.empty((n_test_samples, n_test_features))
         test_labels = np.empty((n_test_samples, 1), dtype=np.int)
         

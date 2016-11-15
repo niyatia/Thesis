@@ -1,15 +1,10 @@
 package com.neu.arithmeticproblemsolver.featureextractor;
 
-import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.ADDITION_LABEL;
-import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.EQUALS_LABEL;
-import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.IRRELEVANT_LABEL;
-import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.QUESTION_LABEL;
-import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.SUBTRACTION_LABEL;
-
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 import com.neu.arithmeticproblemsolver.ws4j.VerbSimilarity;
@@ -39,6 +34,7 @@ public class SentenceInstance {
 	private boolean mHasBaseFormVerb;
 	/** 1=addition, 0=subtraction */
 	private double mVerbClass;
+	private List<Double> mVerbSimilarities;
 
 	private final int mQuestionIndex;
 	private final String mSentenceText;
@@ -79,7 +75,7 @@ public class SentenceInstance {
 		mHasSuperlativeAdverb = hasAPartsOfSpeechAndRelations(true, "RBS");
 		mHasPastFormVerb = hasAPartsOfSpeechAndRelations(true, "VBD");
 		mHasBaseFormVerb = hasAPartsOfSpeechAndRelations(true, "VB");
-		mVerbClass = getVerbClassBasedOnSimilarity();
+		mVerbSimilarities = getVerbClassBasedOnSimilarity();
 	}
 	
 	private boolean hasAPartsOfSpeechAndRelations(final boolean allTagsAreMust, final String... requiredTagsAndRelations) {
@@ -107,8 +103,9 @@ public class SentenceInstance {
 				(!allTagsAreMust && foundTagsAndRelations.size() > 0));
 	}
 	
-	private double getVerbClassBasedOnSimilarity() {
-		double verbClass = -1.0;
+	private List<Double> getVerbClassBasedOnSimilarity() {
+		//double verbClass = -1.0;
+		List<Double> verbSimilarities = new ArrayList<>();
 		if (isHasACardinal()) {
     		int cardinalIndex = -1;
     		for (final FeatureDependency featureDependency: mFeatureDependencies) {			
@@ -122,15 +119,18 @@ public class SentenceInstance {
     		}
     		
     		final Set<Integer> uniqueVerbIndices = new HashSet<>();
-    		double depVerbClass = -1.0;
-			double govVerbClass = -1.0;
+    		final List<Double> depVerbSimilarities = new ArrayList<>();
+    		final List<Double> govVerbSimilarities = new ArrayList<>();
+    		/*double depVerbClass = -1.0;
+			double govVerbClass = -1.0;*/
     		for (final FeatureDependency featureDependency: mFeatureDependencies) {    			
     			if (!uniqueVerbIndices.contains(featureDependency.getDepIndex())
             			&& !Verb.valueOfNullable(featureDependency.getDepTag()).equals(Verb.NONE)
             			&& featureDependency.getDepIndex() < cardinalIndex) {
     				uniqueVerbIndices.add(featureDependency.getDepIndex());
     				final String verb = featureDependency.getDepWord();
-        			depVerbClass = VerbSimilarity.getVerbClass(verb);
+    				
+    				depVerbSimilarities.addAll(VerbSimilarity.getVerbSimilarity(verb));
     			}
     			
     			if (!uniqueVerbIndices.contains(featureDependency.getGovIndex())
@@ -138,20 +138,30 @@ public class SentenceInstance {
             			&& featureDependency.getGovIndex() < cardinalIndex) {
     				uniqueVerbIndices.add(featureDependency.getGovIndex());
     				final String verb = featureDependency.getGovWord();
-        			govVerbClass = VerbSimilarity.getVerbClass(verb);
+    				govVerbSimilarities.addAll(VerbSimilarity.getVerbSimilarity(verb));
     			}
     		}
     		
-    		if (depVerbClass == -1) {
+    		/*if (depVerbClass == -1) {
     			verbClass = govVerbClass;
     		} else if (govVerbClass == -1) {
     			verbClass = depVerbClass;
     		} else {
     			verbClass = depVerbClass == 0.0 ? depVerbClass : govVerbClass; 
+    		}*/
+    		
+    		if (depVerbSimilarities.size() > 0) {
+    			verbSimilarities = depVerbSimilarities;
+    		} else {
+    			verbSimilarities = govVerbSimilarities;
     		}
+		} else {
+			final int totalCopies = VerbSimilarity.POSITIVE_VERBS.size() + VerbSimilarity.NEGATIVE_VERBS.size();
+			verbSimilarities = new ArrayList<>(Collections.nCopies(totalCopies, 0.0));
 		}
 		
-		return verbClass;
+		return verbSimilarities;
+		//return verbClass;
 	}
 	
 	@Override

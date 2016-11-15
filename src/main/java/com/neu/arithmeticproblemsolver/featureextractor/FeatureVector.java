@@ -1,5 +1,7 @@
 package com.neu.arithmeticproblemsolver.featureextractor;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +26,8 @@ public class FeatureVector {
 	private final boolean mHasSuperlativeAdverb;
 	private final boolean mHasPastFormVerb;
 	private final boolean mHasBaseFormVerb;
-	private final double mVerbClass;
+	//private final double mVerbClass;
+	private final List<Double> mVerbSimilarities;
 
 	private final List<Double> mFeatureVector;
 
@@ -49,8 +52,10 @@ public class FeatureVector {
 		mHasSuperlativeAdverb = mSentenceInstance.isHasSuperlativeAdverb();
 		mHasPastFormVerb = mSentenceInstance.isHasPastFormVerb();
 		mHasBaseFormVerb = mSentenceInstance.isHasBaseFormVerb();
-		mVerbClass = mSentenceInstance.getVerbClass();
-
+		
+		/** Verb Class based on Hosseini*/
+		//mVerbClass = mSentenceInstance.getVerbClass();
+		mVerbSimilarities = mSentenceInstance.getVerbSimilarities();
 		mFeatureVector = prepareFeatureVector();
 	}
 	
@@ -87,7 +92,12 @@ public class FeatureVector {
 		featureVector.add(mHasSuperlativeAdverb ? 1.0 : 0.0);
 		featureVector.add(mHasPastFormVerb ? 1.0 : 0.0);
 		featureVector.add(mHasBaseFormVerb ? 1.0 : 0.0);
-		featureVector.add(mVerbClass);
+		
+		for (double verbSimilarity: mVerbSimilarities) {
+			featureVector.add(verbSimilarity);
+		}
+		/** Verb Class based on Hosseini*/
+		//featureVector.add(mVerbClass);
 		
 		if (mConsiderNGramFeatures) {
 			final List<RankedNGram> nGrams = FeaturesUtilities.getTopNGrams();
@@ -105,7 +115,8 @@ public class FeatureVector {
 		final StringBuilder sb = new StringBuilder();
 		sb.append(mSentenceInstance.getLabel() + ",");
 		for (final Double feature: mFeatureVector) {
-			sb.append(feature);
+			final NumberFormat formatter = new DecimalFormat("0.00");
+			sb.append(formatter.format(feature));
 			sb.append(",");
 		}
 		sb.deleteCharAt(sb.lastIndexOf(","));

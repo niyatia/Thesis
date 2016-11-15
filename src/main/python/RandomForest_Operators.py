@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix
 from numpy import dtype
+from imblearn.over_sampling import RandomOverSampler
 
 class RandomForest_Operators:
     
@@ -24,9 +25,9 @@ class RandomForest_Operators:
                                             max_features = 5,
                                             class_weight = {
                                                 1:1,
-                                                2:3,
+                                                2:1,
                                                 3:1,
-                                                4:1.5,
+                                                4:1,
                                                 5:1
                                             },
                                             random_state=1000)
@@ -35,7 +36,7 @@ class RandomForest_Operators:
         n_training_samples = 3787
         n_training_features = 13
         training_data = np.empty((n_training_samples, n_training_features))
-        training_labels = np.empty((n_training_samples, 1), dtype=np.int)
+        training_labels = np.empty((n_training_samples, 1), dtype=np.int)        
         
         with open(self.m_training_features) as training_csv_file:
             training_features_file = csv.DictReader(training_csv_file)
@@ -43,7 +44,9 @@ class RandomForest_Operators:
                 training_labels[index] = np.asarray(self.m_color_map.get(ir.pop(self.m_label_key)), dtype=np.int)
                 training_data[index] = np.asarray(ir.values(), dtype=np.float64)
                 
-        self.m_clf.fit(training_data, training_labels)
+        cc = RandomOverSampler()
+        training_data_resampled, training_labels_resampled = cc.fit_sample(training_data, training_labels)
+        self.m_clf.fit(training_data_resampled, training_labels_resampled)
         
     def test(self):
         n_test_samples = 749
