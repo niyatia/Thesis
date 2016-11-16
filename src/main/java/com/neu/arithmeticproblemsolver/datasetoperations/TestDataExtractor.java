@@ -10,6 +10,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -29,32 +31,35 @@ public class TestDataExtractor {
 	        final int noOfQuestions = fileArray.size();
 	        final int noOfTestInstancesToExtract = noOfQuestions/6;
 	        System.out.println(noOfTestInstancesToExtract + ":No of test instances.");
-	        final Set<Integer> indicesConsidered = new HashSet<>();
-	        
-	        final JsonArrayBuilder testDataArrayBuilder = Json.createArrayBuilder();
-	        for (int randomCounter = 1; randomCounter <= noOfTestInstancesToExtract; randomCounter++) {
-	        	final int randomNumber = (int) Math.ceil(Math.random() * noOfQuestions);
-	        	final int randomIndex = randomNumber - 1;
-	        	final JsonObject question = fileArray.getJsonObject(randomIndex);
-	        	System.out.println(randomNumber);
-	        	if (indicesConsidered.contains(randomIndex)) {
+
+			final SortedSet<Integer> testIndices = new TreeSet<>();
+			for (int randomCounter = 1; randomCounter <= noOfTestInstancesToExtract; randomCounter++) {
+				final int randomNumber = (int) Math.ceil(Math.random() * noOfQuestions);
+				final int randomIndex = randomNumber - 1;
+				if (testIndices.contains(randomIndex)) {
 	        		randomCounter--;
 	        		continue;
 	        	}
-	        	indicesConsidered.add(randomIndex);
-	        	testDataArrayBuilder.add(question);
-	        }
+				testIndices.add(randomIndex);
+			}
+
+			final JsonArrayBuilder testDataArrayBuilder = Json.createArrayBuilder();
+			for (final int index : testIndices) {
+				final JsonObject question = fileArray.getJsonObject(index);
+				testDataArrayBuilder.add(question);
+			}
+
 	        final File testDataFile = new File(TEST_DATA_FILE_PATH);
 	        final FileOutputStream testDataFileWriter = new FileOutputStream(testDataFile);
 	        final JsonWriter testDataJsonWriter = Json.createWriter(testDataFileWriter);
 	        testDataJsonWriter.write(testDataArrayBuilder.build());
 	        testDataJsonWriter.close();
-	        System.out.println(indicesConsidered.size());
+	        System.out.println(testIndices.size());
 	        
 	        
 	        final JsonArrayBuilder trainingDataArrayBuilder = Json.createArrayBuilder();
 	        for (int trainingCounter = 0; trainingCounter < fileArray.size(); trainingCounter++) {
-	        	if (!indicesConsidered.contains(trainingCounter)) {
+	        	if (!testIndices.contains(trainingCounter)) {
 	        		final JsonObject currentQuestion = fileArray.getJsonObject(trainingCounter);
 	        		trainingDataArrayBuilder.add(currentQuestion);
 	        	}	        	
