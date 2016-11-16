@@ -40,8 +40,8 @@ class Adaboost_Operators:
                             algorithm="SAMME")
     
     def train(self):
-        n_training_samples = 3787
-        n_training_features = 13
+        n_training_samples = 3784
+        n_training_features = 38
         training_data = np.empty((n_training_samples, n_training_features))
         training_labels = np.empty((n_training_samples, 1), dtype=np.int)
         
@@ -56,9 +56,9 @@ class Adaboost_Operators:
         self.m_adaboost.fit(training_data_resampled, training_labels_resampled)
         
     def prepare_test_data(self):
-        n_test_samples = 749
+        n_test_samples = 752
         self.n_test_samples = n_test_samples
-        n_test_features = 13
+        n_test_features = 38
         test_data = np.empty((n_test_samples, n_test_features))
         test_labels = np.empty((n_test_samples, 1), dtype=np.int)
         

@@ -93,7 +93,7 @@ public class FeatureVector {
 		featureVector.add(mHasPastFormVerb ? 1.0 : 0.0);
 		featureVector.add(mHasBaseFormVerb ? 1.0 : 0.0);
 		
-		for (double verbSimilarity: mVerbSimilarities) {
+		for (final double verbSimilarity: mVerbSimilarities) {
 			featureVector.add(verbSimilarity);
 		}
 		/** Verb Class based on Hosseini*/

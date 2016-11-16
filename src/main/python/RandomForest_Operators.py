@@ -4,6 +4,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix
 from numpy import dtype
 from imblearn.over_sampling import RandomOverSampler
+import json
 
 class RandomForest_Operators:
     
@@ -17,10 +18,15 @@ class RandomForest_Operators:
         color_map['?'] = 3
         color_map['='] = 4
         color_map['i'] = 5
+        color_map[1] = '+'
+        color_map[2] = '-'
+        color_map[3] = '?'
+        color_map[4] = '='
+        color_map[5] = 'i'
         
         self.m_color_map = color_map
         self.m_label_key = "Label"
-        self.m_clf = RandomForestClassifier(n_estimators = 10,
+        self.m_clf = RandomForestClassifier(n_estimators = 100,
                                             criterion = "entropy",
                                             max_features = 5,
                                             class_weight = {
@@ -33,8 +39,8 @@ class RandomForest_Operators:
                                             random_state=1000)
     
     def train(self):
-        n_training_samples = 3787
-        n_training_features = 13
+        n_training_samples = 3784
+        n_training_features = 38
         training_data = np.empty((n_training_samples, n_training_features))
         training_labels = np.empty((n_training_samples, 1), dtype=np.int)        
         
@@ -49,9 +55,9 @@ class RandomForest_Operators:
         self.m_clf.fit(training_data_resampled, training_labels_resampled)
         
     def test(self):
-        n_test_samples = 749
+        n_test_samples = 752
         self.n_test_samples = n_test_samples
-        n_test_features = 13
+        n_test_features = 38
         test_data = np.empty((n_test_samples, n_test_features))
         test_labels = np.empty((n_test_samples, 1), dtype=np.int)
         
@@ -79,3 +85,20 @@ class RandomForest_Operators:
         
         print "Confusion Matrix"
         print confusion_matrix(self.m_test_labels, predict_result)
+
+#         with open("/Users/rajpav/git/ArithmeticProblemSolver/target/classes/dataset/TestData.json") as data_file:    
+#             data = json.load(data_file)
+#         
+#         label_counter = 0
+#         for question in data:
+#             sentences = question["Sentences"]
+#             for sentence in sentences:
+#                 simplified_sentences = sentence["SimplifiedSentences"]
+#                 for simplified_sentence in simplified_sentences:
+#                     simplified_sentence["PredictedLabel"] = self.m_color_map[self.m_test_labels.item(label_counter)]
+#                     label_counter = label_counter + 1
+#         
+#         print self.m_test_labels
+#         
+#         with open("/Users/rajpav/git/ArithmeticProblemSolver/target/classes/dataset/TestDataPredicted.json", 'w') as data_file:    
+#             data = json.dump(data, data_file)

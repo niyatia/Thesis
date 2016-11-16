@@ -22,6 +22,7 @@ public class VerbSimilarity {
 	public static final List<String> POSITIVE_VERBS;
 	public static final List<String> NEGATIVE_VERBS;	
     private static Map<String, String> LEMMA_MAP;
+    private static Map<String, List<Double>> LEMMA_SIMILARITY_MAP;
     private static final RelatednessCalculator WUP;
 	
     static {
@@ -36,6 +37,7 @@ public class VerbSimilarity {
 		
 		callService("initialize");
 		LEMMA_MAP = new HashMap<>();
+		LEMMA_SIMILARITY_MAP = new HashMap<>();
 		WS4JConfiguration.getInstance().setMFS(false);	
 		db = new NictWordNet();
 		WUP = new WuPalmer(db);
@@ -86,15 +88,21 @@ public class VerbSimilarity {
 			LEMMA_MAP.put(verb, verbLemma);
 		}
 		
-		final List<Double> verbSimilarities = new ArrayList<>();
-		for (final String positiveVerb : POSITIVE_VERBS) {
-			final double similarity = similarity(verbLemma, positiveVerb);
-			verbSimilarities.add(similarity);
-		}
+		List<Double> verbSimilarities = new ArrayList<>();
 		
-		for (final String negativeVerb : NEGATIVE_VERBS) {
-			final double similarity = similarity(verbLemma, negativeVerb);
-			verbSimilarities.add(similarity);
+		if (LEMMA_SIMILARITY_MAP.containsKey(verbLemma)){
+			verbSimilarities = LEMMA_SIMILARITY_MAP.get(verbLemma);
+		} else {
+			for (final String positiveVerb : POSITIVE_VERBS) {
+				final double similarity = similarity(verbLemma, positiveVerb);
+				verbSimilarities.add(similarity);
+			}
+			
+			for (final String negativeVerb : NEGATIVE_VERBS) {
+				final double similarity = similarity(verbLemma, negativeVerb);
+				verbSimilarities.add(similarity);
+			}
+			LEMMA_SIMILARITY_MAP.put(verbLemma, verbSimilarities);
 		}
 		
 		return verbSimilarities;
