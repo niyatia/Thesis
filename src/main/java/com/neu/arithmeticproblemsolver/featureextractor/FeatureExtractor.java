@@ -95,7 +95,7 @@ public class FeatureExtractor {
      */
     public void extractFeatures() {
         try {
-            final InputStream inputFileStream = new FileInputStream(TEST_DATA_FILE_PATH);
+            final InputStream inputFileStream = new FileInputStream(TRAINING_DATA_FILE_PATH);
             final JsonReader jsonReader = Json.createReader(inputFileStream);
             final JsonArray fileArray = jsonReader.readArray();
             final Map<String, Map<String, Integer>> labelToPatternFrequencies = new HashMap<>();
@@ -106,28 +106,30 @@ public class FeatureExtractor {
                 final JsonObject questionObject = fileArray.getJsonObject(questionCounter);
                 final int questionIndex = questionObject.getInt(KEY_PARENT_INDEX);
                 final JsonArray sentences = questionObject.getJsonArray(KEY_SENTENCES);
-                final List<SentenceInstance> sentenceInstances = new ArrayList<>();
+                final SortedSet<SentenceInstance> sentenceInstances = new TreeSet<>(getSentenceInstancesComparator());
                 final int noOfSentences = sentences.size();
-
+                int actualSentenceIndex = 0;
                 for (int sentenceCounter = 0; sentenceCounter < noOfSentences; sentenceCounter++) {
                     final JsonObject sentenceObject = sentences.getJsonObject(sentenceCounter);
                     final JsonArray simplifiedSentences = sentenceObject.getJsonArray(KEY_SIMPLIFIED_SENTENCES);
                     final int noOfSimplifiedSentences = simplifiedSentences.size();
                     for (int simpleSentenceCounter = 0; simpleSentenceCounter < noOfSimplifiedSentences; simpleSentenceCounter++) {
-                    	final int simpleSentenceIndex = simpleSentenceCounter + 1;
+                    	
                     	noOfSentencesCount++;
                         final JsonObject simpleSentenceObject = simplifiedSentences.getJsonObject(simpleSentenceCounter);
                         final String simpleSentence = simpleSentenceObject.getString((KEY_SENTENCE));
                         final String label = simpleSentenceObject.getString(KEY_LABEL);
                         final String syntacticPattern = simpleSentenceObject.getString(KEY_SYNTACTIC_PATTERN);
 
-                        final SentenceInstance sentenceInstance = getSentenceInstance(questionIndex, simpleSentenceIndex, simpleSentence, syntacticPattern, label);
+                        final SentenceInstance sentenceInstance = getSentenceInstance(questionIndex, actualSentenceIndex, simpleSentence, syntacticPattern, label);
+                        
                         if (sentenceCounter == noOfSentences - 1 && simpleSentenceCounter == noOfSimplifiedSentences - 1) {
                             sentenceInstance.setItALastSentence(true);
-                        } else if (sentenceCounter == 0 && simpleSentenceCounter == 0){
+                        } else if (actualSentenceIndex == 0){
                         	sentenceInstance.setItAFirstSentence(true);
                         }
                         
+                        actualSentenceIndex = actualSentenceIndex + 1;
                         sentenceInstances.add(sentenceInstance);
                         
                         if (CONSIDER_WORD_FREQUENCY_FEATURES) {
@@ -393,7 +395,7 @@ public class FeatureExtractor {
 	
 	private void printFeatures() {
 		try {
-			final File features = new File(TEST_FEATURES_FILE_PATH);
+			final File features = new File(TRAINING_FEATURES_FILE_PATH);
 			final FileWriter fileWriter = new FileWriter(features);
 			int noOfQuestions = 0;
 			int noOfSentences = 0;
@@ -527,11 +529,15 @@ public class FeatureExtractor {
 			columnOrder.append(positiveVerb + ",");
 		}
 		
-		for (String negativeVerb : VerbSimilarity.NEGATIVE_VERBS) {
-			columnOrder.append(negativeVerb + ",");
+		final int negSize = VerbSimilarity.NEGATIVE_VERBS.size();
+		for (int verbCount = 0; verbCount < negSize; verbCount++) {
+			if (verbCount == negSize - 1) {
+				columnOrder.append(VerbSimilarity.NEGATIVE_VERBS.get(verbCount));
+			} else {
+				columnOrder.append(VerbSimilarity.NEGATIVE_VERBS.get(verbCount) + ",");
+			}
 		}
 		
-		columnOrder.deleteCharAt(columnOrder.lastIndexOf(","));
 		columnOrder.append("\n");
 		return columnOrder.toString();
 	}

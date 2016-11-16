@@ -119,8 +119,6 @@ public class SentenceInstance {
     		}
     		
     		final Set<Integer> uniqueVerbIndices = new HashSet<>();
-    		final List<Double> depVerbSimilarities = new ArrayList<>();
-    		final List<Double> govVerbSimilarities = new ArrayList<>();
     		/*double depVerbClass = -1.0;
 			double govVerbClass = -1.0;*/
     		for (final FeatureDependency featureDependency: mFeatureDependencies) {    			
@@ -130,7 +128,8 @@ public class SentenceInstance {
     				uniqueVerbIndices.add(featureDependency.getDepIndex());
     				final String verb = featureDependency.getDepWord();
     				
-    				depVerbSimilarities.addAll(VerbSimilarity.getVerbSimilarity(verb));
+    				verbSimilarities = VerbSimilarity.getVerbSimilarity(verb);
+    				break;
     			}
     			
     			if (!uniqueVerbIndices.contains(featureDependency.getGovIndex())
@@ -138,7 +137,8 @@ public class SentenceInstance {
             			&& featureDependency.getGovIndex() < cardinalIndex) {
     				uniqueVerbIndices.add(featureDependency.getGovIndex());
     				final String verb = featureDependency.getGovWord();
-    				govVerbSimilarities.addAll(VerbSimilarity.getVerbSimilarity(verb));
+    				verbSimilarities = VerbSimilarity.getVerbSimilarity(verb);
+    				break;
     			}
     		}
     		
@@ -149,12 +149,7 @@ public class SentenceInstance {
     		} else {
     			verbClass = depVerbClass == 0.0 ? depVerbClass : govVerbClass; 
     		}*/
-    		
-    		if (depVerbSimilarities.size() > 0) {
-    			verbSimilarities = depVerbSimilarities;
-    		} else {
-    			verbSimilarities = govVerbSimilarities;
-    		}
+
 		} else {
 			final int totalCopies = VerbSimilarity.POSITIVE_VERBS.size() + VerbSimilarity.NEGATIVE_VERBS.size();
 			verbSimilarities = new ArrayList<>(Collections.nCopies(totalCopies, 0.0));

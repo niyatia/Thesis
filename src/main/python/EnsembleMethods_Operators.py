@@ -9,7 +9,7 @@ class EnsembleMethods_Operators:
     def __init__(self, training_features, testing_features):
         
         self.m_ensemble_clfs = [
-            ("RandomForestClassifier, max_features='7'",
+            ("RandomForestClassifier, max_features='1'",
                 RandomForestClassifier(criterion = "entropy",
                                        max_features = 1,
                                        class_weight = {
@@ -47,7 +47,7 @@ class EnsembleMethods_Operators:
         self.m_max_estimators = 100
     
     def train(self):
-        n_training_samples = 3787
+        n_training_samples = 3784
         n_training_features = 38
         training_data = np.empty((n_training_samples, n_training_features))
         training_labels = np.empty((n_training_samples, 1), dtype=np.int)
@@ -67,7 +67,7 @@ class EnsembleMethods_Operators:
                 
         
     def prepare_test_data(self):
-        n_test_samples = 749
+        n_test_samples = 752
         self.n_test_samples = n_test_samples
         n_test_features = 38
         test_data = np.empty((n_test_samples, n_test_features))
