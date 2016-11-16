@@ -41,7 +41,7 @@ class Adaboost_Operators:
     
     def train(self):
         n_training_samples = 3787
-        n_training_features = 13
+        n_training_features = 38
         training_data = np.empty((n_training_samples, n_training_features))
         training_labels = np.empty((n_training_samples, 1), dtype=np.int)
         
@@ -58,7 +58,7 @@ class Adaboost_Operators:
     def prepare_test_data(self):
         n_test_samples = 749
         self.n_test_samples = n_test_samples
-        n_test_features = 13
+        n_test_features = 38
         test_data = np.empty((n_test_samples, n_test_features))
         test_labels = np.empty((n_test_samples, 1), dtype=np.int)
         
