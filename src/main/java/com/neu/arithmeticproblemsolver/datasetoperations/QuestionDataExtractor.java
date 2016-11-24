@@ -19,19 +19,21 @@ import static com.neu.arithmeticproblemsolver.featureextractor.PublicKeys.KEY_SE
 public class QuestionDataExtractor {
 
     public static void main(String args[]) {
-        extractQuestionData();
+
+        extractQuestionTrainingData(TRAINING_DATA_FILE_PATH, "QuestionTrainingData.csv");
+        extractQuestionTrainingData(TEST_DATA_FILE_PATH, "QuestionTestData.csv");
     }
 
-    public static void extractQuestionData(){
+    public static void extractQuestionTrainingData(String sourceFilePath, String destinationFilePath){
         try {
-            final InputStream inputFileStream = new FileInputStream(TRAINING_DATA_FILE_PATH);
+            final InputStream inputFileStream = new FileInputStream(sourceFilePath);
             final JsonReader jsonReader = Json.createReader(inputFileStream);
             final JsonArray fileArray = jsonReader.readArray();
 
-            final File questionDataFilePath = new File("QuestionData.csv");
+            final File questionDataFilePath = new File(destinationFilePath);
             final FileWriter fileWriter = new FileWriter(questionDataFilePath);
             final int noOfQuestions = fileArray.size();
-            for (int questionCounter = 0; questionCounter < fileArray.size(); questionCounter++) {
+            for (int questionCounter = 0; questionCounter < noOfQuestions; questionCounter++) {
                 final JsonObject questionObject = fileArray.getJsonObject(questionCounter);
                 final JsonArray sentences = questionObject.getJsonArray(KEY_SENTENCES);
                 final int noOfSentences = sentences.size();
