@@ -345,7 +345,7 @@
 		"Sentence": "His dad gave him 7 dimes .",
 		"SimplifiedSentences": [{
 			"Sentence": "His dad gave him 7 dimes .",
-			"label": "+",
+			"label": "-",
 			"SyntacticPattern": "NNVNCN"
 		}]
 	}, {
@@ -611,11 +611,11 @@
 		"Sentence": "Her dad gave her 8 dimes and her mother gave her 4 dimes .",
 		"SimplifiedSentences": [{
 			"Sentence": "Her dad gave her 8 dimes .",
-			"label": "+",
+			"label": "-",
 			"SyntacticPattern": "NNVNCN"
 		}, {
 			"Sentence": "her mother gave her 4 dimes .",
-			"label": "+",
+			"label": "-",
 			"SyntacticPattern": "NNVNCN"
 		}]
 	}, {
@@ -882,7 +882,7 @@
 		"Sentence": "His dad gave him 25 quarters .",
 		"SimplifiedSentences": [{
 			"Sentence": "His dad gave him 25 quarters .",
-			"label": "+",
+			"label": "-",
 			"SyntacticPattern": "NNVNCN"
 		}]
 	}, {
@@ -13343,7 +13343,7 @@
 			"SyntacticPattern": "NVCNDAN"
 		}, {
 			"Sentence": "then her sister gave her 40 more pieces .",
-			"label": "+",
+			"label": "-",
 			"SyntacticPattern": "NNVNCAN"
 		}]
 	}, {
@@ -14399,7 +14399,7 @@
 			"SyntacticPattern": "NVCNPNDAN"
 		}, {
 			"Sentence": "then her sister gave her 19 more pieces of candy .",
-			"label": "+",
+			"label": "-",
 			"SyntacticPattern": "NNVNCANPN"
 		}]
 	}, {
@@ -16620,7 +16620,7 @@
 		"Sentence": "Dan gave her 41 new cards .",
 		"SimplifiedSentences": [{
 			"Sentence": "Dan gave her 41 new cards .",
-			"label": "+",
+			"label": "-",
 			"SyntacticPattern": "NVNCAN"
 		}]
 	}, {
@@ -22718,7 +22718,7 @@
 		"Sentence": "Robert gave her 109 more markers .",
 		"SimplifiedSentences": [{
 			"Sentence": "Robert gave her 109 more markers .",
-			"label": "+",
+			"label": "-",
 			"SyntacticPattern": "NVNCAN"
 		}]
 	}, {
@@ -23255,7 +23255,7 @@
 			"SyntacticPattern": "NNNVNC"
 		}, {
 			"Sentence": "his parents gave him $ 75 .",
-			"label": "+",
+			"label": "-",
 			"SyntacticPattern": "NNVNC"
 		}]
 	}, {
@@ -28228,7 +28228,7 @@
 		"Sentence": "Anita gave her 5 more .",
 		"SimplifiedSentences": [{
 			"Sentence": "Anita gave her 5 more apples .",
-			"label": "+",
+			"label": "-",
 			"SyntacticPattern": "NVNCAN"
 		}]
 	}, {
@@ -28283,7 +28283,7 @@
 		"Sentence": "Mr. Sheridan gave her 14 more cats .",
 		"SimplifiedSentences": [{
 			"Sentence": "Mr. Sheridan gave her 14 more cats .",
-			"label": "+",
+			"label": "-",
 			"SyntacticPattern": "NVNCAN"
 		}]
 	}, {
@@ -28312,7 +28312,7 @@
 		"Sentence": "Her sister gave her 47 more fish .",
 		"SimplifiedSentences": [{
 			"Sentence": "Her sister gave her 47 more fish .",
-			"label": "+",
+			"label": "-",
 			"SyntacticPattern": "NNVNCAN"
 		}]
 	}, {
@@ -28982,7 +28982,7 @@
 		"Sentence": "His mom gave him 34 more balloons for his birthday .",
 		"SimplifiedSentences": [{
 			"Sentence": "His mom gave him 34 more balloons for his birthday .",
-			"label": "+",
+			"label": "-",
 			"SyntacticPattern": "NNVNCANPNN"
 		}]
 	}, {
@@ -29226,7 +29226,7 @@
 		"Sentence": "Steve gave him 16 more pieces of gum .",
 		"SimplifiedSentences": [{
 			"Sentence": "Steve gave him 16 more pieces of gum .",
-			"label": "+",
+			"label": "-",
 			"SyntacticPattern": "NVNCANPN"
 		}]
 	}, {
@@ -29324,7 +29324,7 @@
 		"Sentence": "Robert gave her 39 more markers .",
 		"SimplifiedSentences": [{
 			"Sentence": "Robert gave her 39 more markers .",
-			"label": "+",
+			"label": "-",
 			"SyntacticPattern": "NVNCAN"
 		}]
 	}, {
@@ -29633,7 +29633,7 @@
 		"Sentence": "Andre gave her some more flowers .",
 		"SimplifiedSentences": [{
 			"Sentence": "Andre gave her some more flowers .",
-			"label": "+",
+			"label": "-",
 			"SyntacticPattern": "NVNDAN"
 		}]
 	}, {
